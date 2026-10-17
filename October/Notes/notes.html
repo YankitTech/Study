@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>APIs Login Bypass</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+
+  <body>
+    <main>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../october.html">October</a></li>
+          <li aria-current="page">APIs Login Bypass</li>
+        </ol>
+      </nav>
+      <h1>*** Playwright Cofig File ***</h1>
+      <p class="sub">
+        Key options explained
+
+        <li>
+          discovery testDir: folder where Playwright looks for tests. testMatch
+          / testIgnore: glob patterns to include or exclude files.
+        </li>
+        <li>
+          Timeouts timeout: max time per test (default 30s). expect.timeout: max
+          time for expect() assertions to pass (default 5s). globalTimeout: cap
+          for the entire test run.
+        </li>
+        <li>
+          Parallelism and reliability fullyParallel: run tests within a file in
+          parallel too, not just across files. workers: number of parallel
+          worker processes. Defaults to half your CPU cores. retries: how many
+          times to re-run a failed test. Commonly 0 locally, 1-2 on CI.
+          forbidOnly: fails the run if someone left test.only in the code (great
+          for CI).
+        </li>
+        <li>
+          Reporters reporter: how results are shown: list, line, dot, html,
+          json, junit, or a custom one. You can combine several.
+        </li>
+        <li>
+          use (shared test options) These apply to every test’s browser context
+          and page: baseURL: lets you write page.goto('/login') instead of full
+          URLs. trace: records a debuggable trace (on, off, on-first-retry,
+          retain-on-failure). screenshot, video: capture artifacts on failure or
+          always. headless, viewport, locale, timezoneId, geolocation,
+          permissions, storageState, extraHTTPHeaders, ignoreHTTPSErrors, etc.
+        </li>
+        <li>
+          projects Projects let you run the same tests under different
+          configurations: different browsers, devices, environments, or even
+          different test folders. Each project can override use, testDir,
+          retries, and so on. Projects can also depend on each other via
+          dependencies, which is handy for a “setup” project that logs in and
+          saves auth state.
+        </li>
+      </p>
+    </main>
+  </body>
+</html>

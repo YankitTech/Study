@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>APIs Login Bypass</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+
+  <body>
+    <main>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../october.html">October</a></li>
+          <li aria-current="page">APIs Login Bypass</li>
+        </ol>
+      </nav>
+
+      <h1>*** Interview Questions ***</h1>
+      <p>
+        <ul>
+            <li>
+                why is Playwright faster?
+                Because it directly interacts with the browser element, unlike selenium which use web-driver. It also has built in auto waiting.
+            </li>
+            <li>
+                How to setup Playwright project
+                1. install node
+                2. npm init Playwright@latest
+                3. npx Playwright install - to download browser binaries needed for execution.
+            </li>
+            <li>
+                How does Playwright communicate with the browser?
+                Playwright communicates directly with the browser using its native automation protocol.
+                for chromium it used the chrome devtools protocol and for firefox and webkit use their own browser protocols.
+                Therefore it doesnot need a separate webdriver.
+                this reduces the execution time, gives better performance and stable automation flow.
+
+            </li>
+            <li>
+                what is autowaiting? and if Playwright have autowaiting then why we use async and await?
+                Auto-waiting means Playwright waits for an element to be ready before it acts on it,
+                Why you still need async and await
+
+                They solve a different problem:                    
+                Auto-waiting is Playwright waiting for the browser page to be ready.
+                await is JavaScript waiting for Playwright’s function call to finish.
+                Every Playwright action talks to a browser, which takes time, so it returns a Promise. Without await, your code doesn’t wait for that Promise and moves straight to the next line. The auto-waiting happens inside the call you are awaiting.
+            </li>
+            
+        </ul>
+      </p>
+      </main>
+  </body>
+</html>
