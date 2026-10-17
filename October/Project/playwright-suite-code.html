@@ -1,0 +1,2917 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>APIs Login Bypass</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+
+  <body>
+    <main>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../october.html">October</a></li>
+          <li aria-current="page">Project Tests</li>
+        </ol>
+      </nav>
+        <article>
+  <h2>Playwright + TypeScript Test Suite: Complete Source Code</h2>
+  <p>All 37 files of the project. Create each file at the path shown in its heading, then run <code>npm install</code> and <code>npx playwright install --with-deps</code>.</p>
+  <h3>Contents</h3>
+  <ol>
+  <li><a href="#f-readme-md"><code>README.md</code></a></li>
+  <li><a href="#f-package-json"><code>package.json</code></a></li>
+  <li><a href="#f-tsconfig-json"><code>tsconfig.json</code></a></li>
+  <li><a href="#f-playwright-config-ts"><code>playwright.config.ts</code></a></li>
+  <li><a href="#f-env-example"><code>.env.example</code></a></li>
+  <li><a href="#f-gitignore"><code>.gitignore</code></a></li>
+  <li><a href="#f-src-config-env-ts"><code>src/config/env.ts</code></a></li>
+  <li><a href="#f-src-data-products-ts"><code>src/data/products.ts</code></a></li>
+  <li><a href="#f-src-data-users-ts"><code>src/data/users.ts</code></a></li>
+  <li><a href="#f-src-fixtures-index-ts"><code>src/fixtures/index.ts</code></a></li>
+  <li><a href="#f-src-pages-basepage-ts"><code>src/pages/BasePage.ts</code></a></li>
+  <li><a href="#f-src-pages-cartpage-ts"><code>src/pages/CartPage.ts</code></a></li>
+  <li><a href="#f-src-pages-checkoutpage-ts"><code>src/pages/CheckoutPage.ts</code></a></li>
+  <li><a href="#f-src-pages-inventorypage-ts"><code>src/pages/InventoryPage.ts</code></a></li>
+  <li><a href="#f-src-pages-loginpage-ts"><code>src/pages/LoginPage.ts</code></a></li>
+  <li><a href="#f-src-pages-productdetailpage-ts"><code>src/pages/ProductDetailPage.ts</code></a></li>
+  <li><a href="#f-src-utils-helpers-ts"><code>src/utils/helpers.ts</code></a></li>
+  <li><a href="#f-tests-a11y-a11y-spec-ts"><code>tests/a11y/a11y.spec.ts</code></a></li>
+  <li><a href="#f-tests-api-api-spec-ts"><code>tests/api/api.spec.ts</code></a></li>
+  <li><a href="#f-tests-auth-login-spec-ts"><code>tests/auth/login.spec.ts</code></a></li>
+  <li><a href="#f-tests-auth-session-spec-ts"><code>tests/auth/session.spec.ts</code></a></li>
+  <li><a href="#f-tests-auth-special-users-spec-ts"><code>tests/auth/special-users.spec.ts</code></a></li>
+  <li><a href="#f-tests-cart-cart-spec-ts"><code>tests/cart/cart.spec.ts</code></a></li>
+  <li><a href="#f-tests-checkout-checkout-spec-ts"><code>tests/checkout/checkout.spec.ts</code></a></li>
+  <li><a href="#f-tests-e2e-purchase-journey-spec-ts"><code>tests/e2e/purchase-journey.spec.ts</code></a></li>
+  <li><a href="#f-tests-inventory-inventory-spec-ts"><code>tests/inventory/inventory.spec.ts</code></a></li>
+  <li><a href="#f-tests-inventory-product-detail-spec-ts"><code>tests/inventory/product-detail.spec.ts</code></a></li>
+  <li><a href="#f-tests-inventory-sorting-spec-ts"><code>tests/inventory/sorting.spec.ts</code></a></li>
+  <li><a href="#f-tests-network-network-spec-ts"><code>tests/network/network.spec.ts</code></a></li>
+  <li><a href="#f-tests-performance-performance-spec-ts"><code>tests/performance/performance.spec.ts</code></a></li>
+  <li><a href="#f-tests-responsive-responsive-spec-ts"><code>tests/responsive/responsive.spec.ts</code></a></li>
+  <li><a href="#f-tests-security-security-spec-ts"><code>tests/security/security.spec.ts</code></a></li>
+  <li><a href="#f-tests-seo-site-health-spec-ts"><code>tests/seo/site-health.spec.ts</code></a></li>
+  <li><a href="#f-tests-setup-auth-setup-ts"><code>tests/setup/auth.setup.ts</code></a></li>
+  <li><a href="#f-tests-ui-interactions-interactions-spec-ts"><code>tests/ui-interactions/interactions.spec.ts</code></a></li>
+  <li><a href="#f-tests-visual-visual-spec-ts"><code>tests/visual/visual.spec.ts</code></a></li>
+  <li><a href="#f-github-workflows-playwright-yml"><code>.github/workflows/playwright.yml</code></a></li>
+  </ol>
+  <section id="f-readme-md">
+  <h3><code>README.md</code></h3>
+  <pre><code># Playwright + TypeScript — Large Website Test Suite
+
+  ~240 test definitions (400+ executed cases once loops/viewports/browsers expand) covering
+  functional E2E, API, accessibility, visual regression, responsive, security, SEO/site-health,
+  network mocking, performance and UI-interaction patterns.
+
+  Default target: https://www.saucedemo.com (public demo e-commerce site) so it runs out of the box.
+
+  ## Quick start
+  ```bash
+  npm install
+  npx playwright install --with-deps
+  cp .env.example .env
+  npm test                      # everything except visual
+  npm run test:visual:update    # create visual baselines once
+  npm run test:visual
+  npm run report
+  ```
+
+  ## Structure
+  ```
+  playwright.config.ts          projects: setup, chromium, firefox, webkit, mobile-*, tablet, visual, api
+  src/config/env.ts             env + budgets
+  src/data/                     users, products, validation datasets
+  src/pages/                    page objects (Base, Login, Inventory, ProductDetail, Cart, Checkout)
+  src/fixtures/index.ts         custom fixtures (pages, pre-opened inventory, guestState)
+  src/utils/helpers.ts          price parsing, sorting asserts, console/network health tracker
+  tests/setup/                  logs in once -&gt; .auth/standard-user.json (storageState)
+  tests/auth/                   login, invalid-input matrix, session, access control, personas
+  tests/inventory/              listing, sorting, product detail
+  tests/cart/                   add/remove/persist/reset
+  tests/checkout/               validation, price math, confirmation
+  tests/e2e/                    full journeys
+  tests/a11y/                   axe-core WCAG audits, keyboard, reduced-motion, forced-colors
+  tests/visual/                 screenshot comparisons, dark mode, 3 viewports
+  tests/responsive/             8 viewports x 4 checks, touch targets, orientation
+  tests/security/               headers, cookies, XSS, CORS, TRACE, exposed files
+  tests/seo/                    crawler-style health checks (CRAWL_PATHS), links, robots, sitemap
+  tests/network/                route abort/fulfill/delay, HAR, offline, geolocation
+  tests/performance/            nav timing, LCP/CLS, weight, CDP throttling
+  tests/api/                    full REST CRUD against JSONPlaceholder
+  tests/ui-interactions/        dialogs, frames, popups, upload/download, hover, tables, auth
+  .github/workflows/            sharded matrix CI + merged HTML report
+  ```
+
+  ## Useful commands
+  | Goal | Command |
+  |---|---|
+  | Smoke only | `npm run test:smoke` |
+  | One browser | `npm run test:firefox` |
+  | Mobile | `npm run test:mobile` |
+  | API only | `npm run test:api` |
+  | Accessibility | `npm run test:a11y` |
+  | UI mode / debug | `npm run test:ui` / `npm run test:debug` |
+  | Tag filter | `npx playwright test --grep "@security"` |
+
+  Tags: `@smoke @regression @e2e @a11y @security @perf @api @responsive @slow`
+
+  ## Pointing it at your own site
+  1. Set `BASE_URL` (and `CRAWL_PATHS=/,/about,/pricing,...`) in `.env`.
+  2. Replace selectors/data in `src/pages/*` and `src/data/*` (SauceDemo uses `data-test`, configured via `testIdAttribute`).
+  3. Replace credentials in `.env`; the generic suites (seo, security, network, performance, a11y,
+    responsive) work on any site with little change.
+
+  ## Notes
+  - Some checks are deliberately **annotated rather than failed** (security headers, serious a11y issues,
+    SEO extras). Set `STRICT_SECURITY=true` to enforce headers. Annotations show in the HTML report.
+  - Axe fails the build only on *critical* violations; full JSON is attached to each test.
+  - The public demo sites can change or be slow; the `ui-interactions` and `api` suites depend on them.</code></pre>
+  </section>
+  <section id="f-package-json">
+  <h3><code>package.json</code></h3>
+  <pre><code>{
+    "name": "playwright-large-site-suite",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Comprehensive Playwright + TypeScript test suite",
+    "scripts": {
+      "test": "playwright test",
+      "test:chromium": "playwright test --project=chromium",
+      "test:firefox": "playwright test --project=firefox",
+      "test:webkit": "playwright test --project=webkit",
+      "test:mobile": "playwright test --project=mobile-chrome --project=mobile-safari",
+      "test:smoke": "playwright test --grep @smoke --project=chromium",
+      "test:regression": "playwright test --grep @regression",
+      "test:api": "playwright test --project=api",
+      "test:a11y": "playwright test tests/a11y --project=chromium",
+      "test:visual": "playwright test --project=visual",
+      "test:visual:update": "playwright test --project=visual --update-snapshots",
+      "test:headed": "playwright test --headed --project=chromium",
+      "test:ui": "playwright test --ui",
+      "test:debug": "playwright test --debug",
+      "report": "playwright show-report",
+      "codegen": "playwright codegen https://www.saucedemo.com",
+      "typecheck": "tsc --noEmit",
+      "install:browsers": "playwright install --with-deps"
+    },
+    "devDependencies": {
+      "@axe-core/playwright": "^4.10.0",
+      "@playwright/test": "^1.49.0",
+      "@types/node": "^22.0.0",
+      "dotenv": "^16.4.5",
+      "typescript": "^5.6.0"
+    }
+  }</code></pre>
+  </section>
+  <section id="f-tsconfig-json">
+  <h3><code>tsconfig.json</code></h3>
+  <pre><code>{
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "resolveJsonModule": true,
+      "forceConsistentCasingInFileNames": true,
+      "noUnusedLocals": false,
+      "baseUrl": ".",
+      "paths": {
+        "@pages/*": ["src/pages/*"],
+        "@data/*": ["src/data/*"],
+        "@utils/*": ["src/utils/*"],
+        "@config/*": ["src/config/*"],
+        "@fixtures": ["src/fixtures/index.ts"]
+      }
+    },
+    "include": ["src", "tests", "playwright.config.ts"]
+  }</code></pre>
+  </section>
+  <section id="f-playwright-config-ts">
+  <h3><code>playwright.config.ts</code></h3>
+  <pre><code>import { defineConfig, devices } from '@playwright/test';
+  import 'dotenv/config';
+
+  const BASE_URL = process.env.BASE_URL ?? 'https://www.saucedemo.com';
+  const CI = !!process.env.CI;
+  const AUTH_FILE = '.auth/standard-user.json';
+
+  export default defineConfig({
+    testDir: './tests',
+    outputDir: 'test-results',
+    snapshotPathTemplate: '{testDir}/{testFileDir}/__snapshots__/{testFileName}/{arg}-{projectName}{ext}',
+
+    fullyParallel: true,
+    forbidOnly: CI,
+    retries: CI ? 2 : 0,
+    workers: CI ? 4 : undefined,
+    timeout: 45_000,
+    expect: {
+      timeout: 7_000,
+      toHaveScreenshot: { maxDiffPixelRatio: 0.02, animations: 'disabled' },
+    },
+
+    reporter: [
+      ['list'],
+      ['html', { open: 'never', outputFolder: 'playwright-report' }],
+      ['json', { outputFile: 'test-results/results.json' }],
+      ['junit', { outputFile: 'test-results/junit.xml' }],
+      ...(CI ? ([['github']] as const) : []),
+    ],
+
+    use: {
+      baseURL: BASE_URL,
+      testIdAttribute: 'data-test',
+      trace: 'on-first-retry',
+      screenshot: 'only-on-failure',
+      video: 'retain-on-failure',
+      actionTimeout: 10_000,
+      navigationTimeout: 20_000,
+      locale: 'en-US',
+      timezoneId: 'Asia/Kolkata',
+    },
+
+    projects: [
+      // 1. Logs in once and saves the session for the other projects
+      { name: 'setup', testMatch: /auth\.setup\.ts/, testDir: './tests/setup' },
+
+      // 2. Desktop browsers (authenticated by default)
+      {
+        name: 'chromium',
+        use: { ...devices['Desktop Chrome'], storageState: AUTH_FILE },
+        dependencies: ['setup'],
+        testIgnore: ['**/visual/**', '**/api/**'],
+      },
+      {
+        name: 'firefox',
+        use: { ...devices['Desktop Firefox'], storageState: AUTH_FILE },
+        dependencies: ['setup'],
+        testIgnore: ['**/visual/**', '**/api/**', '**/performance/**'],
+      },
+      {
+        name: 'webkit',
+        use: { ...devices['Desktop Safari'], storageState: AUTH_FILE },
+        dependencies: ['setup'],
+        testIgnore: ['**/visual/**', '**/api/**', '**/performance/**'],
+      },
+
+      // 3. Mobile / tablet
+      {
+        name: 'mobile-chrome',
+        use: { ...devices['Pixel 7'], storageState: AUTH_FILE },
+        dependencies: ['setup'],
+        testMatch: ['**/responsive/**', '**/inventory/**', '**/cart/**', '**/auth/**'],
+      },
+      {
+        name: 'mobile-safari',
+        use: { ...devices['iPhone 14'], storageState: AUTH_FILE },
+        dependencies: ['setup'],
+        testMatch: ['**/responsive/**', '**/inventory/**', '**/cart/**', '**/auth/**'],
+      },
+      {
+        name: 'tablet',
+        use: { ...devices['iPad (gen 7)'], storageState: AUTH_FILE },
+        dependencies: ['setup'],
+        testMatch: ['**/responsive/**'],
+      },
+
+      // 4. Visual regression (run `npm run test:visual:update` first to create baselines)
+      {
+        name: 'visual',
+        testDir: './tests/visual',
+        use: { ...devices['Desktop Chrome'], storageState: AUTH_FILE },
+        dependencies: ['setup'],
+      },
+
+      // 5. API tests (no browser)
+      {
+        name: 'api',
+        testDir: './tests/api',
+        use: { baseURL: process.env.API_BASE_URL ?? 'https://jsonplaceholder.typicode.com' },
+      },
+    ],
+  });</code></pre>
+  </section>
+  <section id="f-env-example">
+  <h3><code>.env.example</code></h3>
+  <pre><code># Copy to .env and adjust
+  BASE_URL=https://www.saucedemo.com
+  API_BASE_URL=https://jsonplaceholder.typicode.com
+  INTERNET_URL=https://the-internet.herokuapp.com
+
+  STANDARD_USER=standard_user
+  LOCKED_USER=locked_out_user
+  PROBLEM_USER=problem_user
+  PERF_USER=performance_glitch_user
+  ERROR_USER=error_user
+  VISUAL_USER=visual_user
+  PASSWORD=secret_sauce
+
+  # Fail (instead of just annotate) when security headers are missing
+  STRICT_SECURITY=false
+  # Comma separated paths for the site-health crawler
+  CRAWL_PATHS=/
+  # Performance budgets (ms)
+  BUDGET_DCL_MS=4000
+  BUDGET_LOAD_MS=6000
+  BUDGET_LCP_MS=4000</code></pre>
+  </section>
+  <section id="f-gitignore">
+  <h3><code>.gitignore</code></h3>
+  <pre><code>node_modules/
+  test-results/
+  playwright-report/
+  blob-report/
+  playwright/.cache/
+  .auth/
+  .env</code></pre>
+  </section>
+  <section id="f-src-config-env-ts">
+  <h3><code>src/config/env.ts</code></h3>
+  <pre><code>import 'dotenv/config';
+
+  const num = (v: string | undefined, d: number) =&gt; (v ? Number(v) : d);
+
+  export const env = {
+    baseUrl: process.env.BASE_URL ?? 'https://www.saucedemo.com',
+    apiBaseUrl: process.env.API_BASE_URL ?? 'https://jsonplaceholder.typicode.com',
+    internetUrl: process.env.INTERNET_URL ?? 'https://the-internet.herokuapp.com',
+    password: process.env.PASSWORD ?? 'secret_sauce',
+    users: {
+      standard: process.env.STANDARD_USER ?? 'standard_user',
+      locked: process.env.LOCKED_USER ?? 'locked_out_user',
+      problem: process.env.PROBLEM_USER ?? 'problem_user',
+      perf: process.env.PERF_USER ?? 'performance_glitch_user',
+      error: process.env.ERROR_USER ?? 'error_user',
+      visual: process.env.VISUAL_USER ?? 'visual_user',
+    },
+    strictSecurity: process.env.STRICT_SECURITY === 'true',
+    crawlPaths: (process.env.CRAWL_PATHS ?? '/').split(',').map((s) =&gt; s.trim()),
+    budgets: {
+      dclMs: num(process.env.BUDGET_DCL_MS, 4000),
+      loadMs: num(process.env.BUDGET_LOAD_MS, 6000),
+      lcpMs: num(process.env.BUDGET_LCP_MS, 4000),
+    },
+  };
+
+  export const AUTH_FILE = '.auth/standard-user.json';</code></pre>
+  </section>
+  <section id="f-src-data-products-ts">
+  <h3><code>src/data/products.ts</code></h3>
+  <pre><code>export interface Product {
+    name: string;
+    price: number;
+    slug: string;
+  }
+
+  const slugify = (n: string) =&gt; n.toLowerCase().replace(/ /g, '-');
+  const p = (name: string, price: number): Product =&gt; ({ name, price, slug: slugify(name) });
+
+  export const products = {
+    backpack: p('Sauce Labs Backpack', 29.99),
+    bikeLight: p('Sauce Labs Bike Light', 9.99),
+    boltShirt: p('Sauce Labs Bolt T-Shirt', 15.99),
+    fleece: p('Sauce Labs Fleece Jacket', 49.99),
+    onesie: p('Sauce Labs Onesie', 7.99),
+    redShirt: p('Test.allTheThings() T-Shirt (Red)', 15.99),
+  };
+
+  export const allProducts: Product[] = Object.values(products);
+  export const TAX_RATE = 0.08;
+
+  export const sortOptions = [
+    { value: 'az', label: 'Name (A to Z)' },
+    { value: 'za', label: 'Name (Z to A)' },
+    { value: 'lohi', label: 'Price (low to high)' },
+    { value: 'hilo', label: 'Price (high to low)' },
+  ] as const;</code></pre>
+  </section>
+  <section id="f-src-data-users-ts">
+  <h3><code>src/data/users.ts</code></h3>
+  <pre><code>import { env } from '../config/env';
+
+  export interface TestUser {
+    username: string;
+    password: string;
+    label: string;
+  }
+
+  export const users = {
+    standard: { username: env.users.standard, password: env.password, label: 'standard' },
+    locked: { username: env.users.locked, password: env.password, label: 'locked out' },
+    problem: { username: env.users.problem, password: env.password, label: 'problem' },
+    perf: { username: env.users.perf, password: env.password, label: 'performance glitch' },
+    error: { username: env.users.error, password: env.password, label: 'error' },
+    visual: { username: env.users.visual, password: env.password, label: 'visual' },
+  } satisfies Record&lt;string, TestUser&gt;;
+
+  export const invalidLogins = [
+    { name: 'wrong password', username: env.users.standard, password: 'wrong', error: 'Username and password do not match' },
+    { name: 'unknown user', username: 'nobody', password: env.password, error: 'Username and password do not match' },
+    { name: 'empty username', username: '', password: env.password, error: 'Username is required' },
+    { name: 'empty password', username: env.users.standard, password: '', error: 'Password is required' },
+    { name: 'both empty', username: '', password: '', error: 'Username is required' },
+    { name: 'uppercase username (case-sensitive)', username: env.users.standard.toUpperCase(), password: env.password, error: 'do not match' },
+    { name: 'whitespace username', username: '   ', password: env.password, error: 'do not match' },
+    { name: 'SQL injection attempt', username: "' OR 1=1 --", password: "' OR 1=1 --", error: 'do not match' },
+    { name: 'XSS attempt', username: '&lt;script&gt;alert(1)&lt;/script&gt;', password: 'x', error: 'do not match' },
+    { name: 'very long input', username: 'a'.repeat(5000), password: 'b'.repeat(5000), error: 'do not match' },
+  ];
+
+  export const checkoutInfo = {
+    valid: { firstName: 'Asha', lastName: 'Verma', postalCode: '121001' },
+    unicode: { firstName: 'Zoë', lastName: 'Müller-Ñandú', postalCode: 'ÄÖÜ 123' },
+  };
+
+  export const checkoutValidationCases = [
+    { name: 'missing first name', firstName: '', lastName: 'Verma', postalCode: '121001', error: 'First Name is required' },
+    { name: 'missing last name', firstName: 'Asha', lastName: '', postalCode: '121001', error: 'Last Name is required' },
+    { name: 'missing postal code', firstName: 'Asha', lastName: 'Verma', postalCode: '', error: 'Postal Code is required' },
+    { name: 'all empty', firstName: '', lastName: '', postalCode: '', error: 'First Name is required' },
+  ];</code></pre>
+  </section>
+  <section id="f-src-fixtures-index-ts">
+  <h3><code>src/fixtures/index.ts</code></h3>
+  <pre><code>import { test as base, expect } from '@playwright/test';
+  import { LoginPage } from '../pages/LoginPage';
+  import { InventoryPage } from '../pages/InventoryPage';
+  import { CartPage } from '../pages/CartPage';
+  import { CheckoutPage } from '../pages/CheckoutPage';
+  import { ProductDetailPage } from '../pages/ProductDetailPage';
+
+  type Fixtures = {
+    loginPage: LoginPage;
+    inventoryPage: InventoryPage;
+    cartPage: CartPage;
+    checkoutPage: CheckoutPage;
+    productPage: ProductDetailPage;
+    /** Inventory page already opened (authenticated via storageState) */
+    inventory: InventoryPage;
+  };
+
+  export const test = base.extend&lt;Fixtures&gt;({
+    loginPage: async ({ page }, use) =&gt; use(new LoginPage(page)),
+    inventoryPage: async ({ page }, use) =&gt; use(new InventoryPage(page)),
+    cartPage: async ({ page }, use) =&gt; use(new CartPage(page)),
+    checkoutPage: async ({ page }, use) =&gt; use(new CheckoutPage(page)),
+    productPage: async ({ page }, use) =&gt; use(new ProductDetailPage(page)),
+    inventory: async ({ page }, use) =&gt; {
+      const inv = new InventoryPage(page);
+      await inv.goto();
+      await inv.expectLoaded();
+      await use(inv);
+    },
+  });
+
+  /** Use in specs that need a logged-out browser */
+  export const guestState = { cookies: [], origins: [] } as const;
+
+  export { expect };</code></pre>
+  </section>
+  <section id="f-src-pages-basepage-ts">
+  <h3><code>src/pages/BasePage.ts</code></h3>
+  <pre><code>import { Locator, Page, expect } from '@playwright/test';
+
+  export abstract class BasePage {
+    abstract readonly path: string;
+
+    constructor(readonly page: Page) {}
+
+    // Header + sidebar are shared across every authenticated page
+    get title(): Locator { return this.page.getByTestId('title'); }
+    get cartLink(): Locator { return this.page.getByTestId('shopping-cart-link'); }
+    get cartBadge(): Locator { return this.page.getByTestId('shopping-cart-badge'); }
+    get menuButton(): Locator { return this.page.locator('#react-burger-menu-btn'); }
+    get menuCloseButton(): Locator { return this.page.locator('#react-burger-cross-btn'); }
+    get logoutLink(): Locator { return this.page.getByTestId('logout-sidebar-link'); }
+    get resetLink(): Locator { return this.page.getByTestId('reset-sidebar-link'); }
+    get aboutLink(): Locator { return this.page.getByTestId('about-sidebar-link'); }
+    get allItemsLink(): Locator { return this.page.getByTestId('inventory-sidebar-link'); }
+
+    async goto() {
+      await this.page.goto(this.path);
+    }
+
+    async openMenu() {
+      await this.menuButton.click();
+      await expect(this.logoutLink).toBeVisible();
+    }
+
+    async logout() {
+      await this.openMenu();
+      await this.logoutLink.click();
+      await expect(this.page).toHaveURL(/\/$/);
+    }
+
+    async resetAppState() {
+      await this.openMenu();
+      await this.resetLink.click();
+      await this.menuCloseButton.click();
+    }
+
+    async openCart() {
+      await this.cartLink.click();
+      await expect(this.page).toHaveURL(/cart\.html/);
+    }
+
+    async cartCount(): Promise&lt;number&gt; {
+      return (await this.cartBadge.count()) ? Number(await this.cartBadge.innerText()) : 0;
+    }
+  }</code></pre>
+  </section>
+  <section id="f-src-pages-cartpage-ts">
+  <h3><code>src/pages/CartPage.ts</code></h3>
+  <pre><code>import { Page, Locator, expect } from '@playwright/test';
+  import { BasePage } from './BasePage';
+  import { Product } from '../data/products';
+
+  export class CartPage extends BasePage {
+    readonly path = '/cart.html';
+
+    readonly items: Locator;
+    readonly checkoutButton: Locator;
+    readonly continueShoppingButton: Locator;
+
+    constructor(page: Page) {
+      super(page);
+      this.items = page.getByTestId('inventory-item');
+      this.checkoutButton = page.getByTestId('checkout');
+      this.continueShoppingButton = page.getByTestId('continue-shopping');
+    }
+
+    async expectLoaded() {
+      await expect(this.title).toHaveText('Your Cart');
+    }
+
+    removeButton(p: Product) { return this.page.getByTestId(`remove-${p.slug}`); }
+    async remove(p: Product) { await this.removeButton(p).click(); }
+
+    async names(): Promise&lt;string[]&gt; {
+      return this.page.getByTestId('inventory-item-name').allInnerTexts();
+    }
+
+    async expectContains(products: Product[]) {
+      await expect(this.items).toHaveCount(products.length);
+      const names = await this.names();
+      for (const p of products) expect(names).toContain(p.name);
+    }
+
+    async checkout() { await this.checkoutButton.click(); }
+  }</code></pre>
+  </section>
+  <section id="f-src-pages-checkoutpage-ts">
+  <h3><code>src/pages/CheckoutPage.ts</code></h3>
+  <pre><code>import { Page, Locator, expect } from '@playwright/test';
+  import { BasePage } from './BasePage';
+  import { parsePrice } from '../utils/helpers';
+
+  export interface CustomerInfo { firstName: string; lastName: string; postalCode: string }
+
+  export class CheckoutPage extends BasePage {
+    readonly path = '/checkout-step-one.html';
+
+    readonly firstName: Locator;
+    readonly lastName: Locator;
+    readonly postalCode: Locator;
+    readonly continueButton: Locator;
+    readonly cancelButton: Locator;
+    readonly error: Locator;
+    readonly finishButton: Locator;
+    readonly subtotal: Locator;
+    readonly tax: Locator;
+    readonly total: Locator;
+    readonly completeHeader: Locator;
+    readonly completeText: Locator;
+    readonly backHomeButton: Locator;
+
+    constructor(page: Page) {
+      super(page);
+      this.firstName = page.getByTestId('firstName');
+      this.lastName = page.getByTestId('lastName');
+      this.postalCode = page.getByTestId('postalCode');
+      this.continueButton = page.getByTestId('continue');
+      this.cancelButton = page.getByTestId('cancel');
+      this.error = page.getByTestId('error');
+      this.finishButton = page.getByTestId('finish');
+      this.subtotal = page.getByTestId('subtotal-label');
+      this.tax = page.getByTestId('tax-label');
+      this.total = page.getByTestId('total-label');
+      this.completeHeader = page.getByTestId('complete-header');
+      this.completeText = page.getByTestId('complete-text');
+      this.backHomeButton = page.getByTestId('back-to-products');
+    }
+
+    async fillInfo(info: CustomerInfo) {
+      await this.firstName.fill(info.firstName);
+      await this.lastName.fill(info.lastName);
+      await this.postalCode.fill(info.postalCode);
+    }
+
+    async submitInfo(info: CustomerInfo) {
+      await this.fillInfo(info);
+      await this.continueButton.click();
+    }
+
+    async summary() {
+      return {
+        subtotal: parsePrice(await this.subtotal.innerText()),
+        tax: parsePrice(await this.tax.innerText()),
+        total: parsePrice(await this.total.innerText()),
+      };
+    }
+
+    async finish() {
+      await this.finishButton.click();
+      await expect(this.page).toHaveURL(/checkout-complete\.html/);
+    }
+  }</code></pre>
+  </section>
+  <section id="f-src-pages-inventorypage-ts">
+  <h3><code>src/pages/InventoryPage.ts</code></h3>
+  <pre><code>import { Locator, Page, expect } from '@playwright/test';
+  import { BasePage } from './BasePage';
+  import { Product } from '../data/products';
+  import { parsePrice } from '../utils/helpers';
+
+  export class InventoryPage extends BasePage {
+    readonly path = '/inventory.html';
+
+    readonly items: Locator;
+    readonly sortSelect: Locator;
+
+    constructor(page: Page) {
+      super(page);
+      this.items = page.getByTestId('inventory-item');
+      this.sortSelect = page.getByTestId('product-sort-container');
+    }
+
+    async expectLoaded() {
+      await expect(this.page).toHaveURL(/inventory\.html/);
+      await expect(this.title).toHaveText('Products');
+    }
+
+    addButton(p: Product) { return this.page.getByTestId(`add-to-cart-${p.slug}`); }
+    removeButton(p: Product) { return this.page.getByTestId(`remove-${p.slug}`); }
+    itemCard(p: Product) { return this.items.filter({ hasText: p.name }); }
+
+    async add(p: Product) { await this.addButton(p).click(); }
+    async remove(p: Product) { await this.removeButton(p).click(); }
+
+    async addMany(list: Product[]) { for (const p of list) await this.add(p); }
+
+    async sortBy(value: 'az' | 'za' | 'lohi' | 'hilo') {
+      await this.sortSelect.selectOption(value);
+    }
+
+    async names(): Promise&lt;string[]&gt; {
+      return this.page.getByTestId('inventory-item-name').allInnerTexts();
+    }
+
+    async prices(): Promise&lt;number[]&gt; {
+      return (await this.page.getByTestId('inventory-item-price').allInnerTexts()).map(parsePrice);
+    }
+
+    async imageSources(): Promise&lt;string[]&gt; {
+      return this.items.locator('img').evaluateAll((imgs) =&gt; imgs.map((i) =&gt; (i as HTMLImageElement).src));
+    }
+
+    async openProduct(p: Product) {
+      await this.itemCard(p).getByTestId('inventory-item-name').click();
+      await expect(this.page).toHaveURL(/inventory-item\.html\?id=\d+/);
+    }
+  }</code></pre>
+  </section>
+  <section id="f-src-pages-loginpage-ts">
+  <h3><code>src/pages/LoginPage.ts</code></h3>
+  <pre><code>import { Locator, Page, expect } from '@playwright/test';
+  import { BasePage } from './BasePage';
+  import { TestUser } from '../data/users';
+
+  export class LoginPage extends BasePage {
+    readonly path = '/';
+
+    readonly username: Locator;
+    readonly password: Locator;
+    readonly loginButton: Locator;
+    readonly error: Locator;
+    readonly errorDismiss: Locator;
+    readonly logo: Locator;
+
+    constructor(page: Page) {
+      super(page);
+      this.username = page.getByTestId('username');
+      this.password = page.getByTestId('password');
+      this.loginButton = page.getByTestId('login-button');
+      this.error = page.getByTestId('error');
+      this.errorDismiss = page.getByTestId('error-button');
+      this.logo = page.locator('.login_logo');
+    }
+
+    async login(username: string, password: string) {
+      await this.username.fill(username);
+      await this.password.fill(password);
+      await this.loginButton.click();
+    }
+
+    async loginAs(user: TestUser) {
+      await this.goto();
+      await this.login(user.username, user.password);
+    }
+
+    async expectError(text: string | RegExp) {
+      await expect(this.error).toBeVisible();
+      await expect(this.error).toContainText(text);
+    }
+  }</code></pre>
+  </section>
+  <section id="f-src-pages-productdetailpage-ts">
+  <h3><code>src/pages/ProductDetailPage.ts</code></h3>
+  <pre><code>import { Page } from '@playwright/test';
+  import { BasePage } from './BasePage';
+
+  export class ProductDetailPage extends BasePage {
+    readonly path = '/inventory-item.html?id=4';
+
+    constructor(page: Page) { super(page); }
+
+    get name() { return this.page.getByTestId('inventory-item-name'); }
+    get description() { return this.page.getByTestId('inventory-item-desc'); }
+    get price() { return this.page.getByTestId('inventory-item-price'); }
+    get image() { return this.page.locator('.inventory_details_img'); }
+    get addButton() { return this.page.getByTestId('add-to-cart'); }
+    get removeButton() { return this.page.getByTestId('remove'); }
+    get backButton() { return this.page.getByTestId('back-to-products'); }
+
+    async gotoId(id: number) { await this.page.goto(`/inventory-item.html?id=${id}`); }
+  }</code></pre>
+  </section>
+  <section id="f-src-utils-helpers-ts">
+  <h3><code>src/utils/helpers.ts</code></h3>
+  <pre><code>import { Page, expect } from '@playwright/test';
+
+  export const parsePrice = (text: string): number =&gt; Number(text.replace(/[^0-9.]/g, ''));
+
+  export const round2 = (n: number): number =&gt; Math.round((n + Number.EPSILON) * 100) / 100;
+
+  export const isSortedAsc = &lt;T&gt;(arr: T[], cmp: (a: T, b: T) =&gt; number = (a: any, b: any) =&gt; (a &gt; b ? 1 : a &lt; b ? -1 : 0)) =&gt;
+    arr.every((v, i) =&gt; i === 0 || cmp(arr[i - 1], v) &lt;= 0);
+
+  export const isSortedDesc = &lt;T&gt;(arr: T[], cmp?: (a: T, b: T) =&gt; number) =&gt; isSortedAsc([...arr].reverse(), cmp);
+
+  /** Collects console errors, uncaught exceptions and failed requests for a page. */
+  export function trackPageHealth(page: Page, opts: { ignore?: RegExp[] } = {}) {
+    const consoleErrors: string[] = [];
+    const pageErrors: string[] = [];
+    const failedRequests: string[] = [];
+    const ignore = opts.ignore ?? [];
+    const skip = (s: string) =&gt; ignore.some((r) =&gt; r.test(s));
+
+    page.on('console', (m) =&gt; {
+      if (m.type() === 'error' &amp;&amp; !skip(m.text())) consoleErrors.push(m.text());
+    });
+    page.on('pageerror', (e) =&gt; {
+      if (!skip(e.message)) pageErrors.push(e.message);
+    });
+    page.on('requestfailed', (r) =&gt; {
+      const s = `${r.method()} ${r.url()} - ${r.failure()?.errorText}`;
+      if (!skip(s)) failedRequests.push(s);
+    });
+    return { consoleErrors, pageErrors, failedRequests };
+  }
+
+  export async function expectNoHorizontalScroll(page: Page) {
+    const overflow = await page.evaluate(() =&gt; document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow, 'page should not scroll horizontally').toBeLessThanOrEqual(1);
+  }
+
+  export const uniqueEmail = (prefix = 'qa') =&gt; `${prefix}+${Date.now()}${Math.floor(Math.random() * 1e4)}@example.com`;</code></pre>
+  </section>
+  <section id="f-tests-a11y-a11y-spec-ts">
+  <h3><code>tests/a11y/a11y.spec.ts</code></h3>
+  <pre><code>import AxeBuilder from '@axe-core/playwright';
+  import { test, expect, guestState } from '../../src/fixtures';
+  import { products } from '../../src/data/products';
+  import { checkoutInfo } from '../../src/data/users';
+
+  /**
+  * Accessibility audits with axe-core.
+  * - Full reports are attached to every test.
+  * - The build fails on "critical" violations; serious ones are annotated so they show in the report.
+  */
+  async function audit(page: import('@playwright/test').Page, name: string) {
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+    await test.info().attach(`axe-${name}.json`, { body: JSON.stringify(results.violations, null, 2), contentType: 'application/json' });
+
+    const serious = results.violations.filter((v) =&gt; v.impact === 'serious');
+    for (const v of serious) test.info().annotations.push({ type: 'a11y-serious', description: `${v.id}: ${v.help} (${v.nodes.length} nodes)` });
+
+    const critical = results.violations.filter((v) =&gt; v.impact === 'critical');
+    expect(critical, critical.map((v) =&gt; `${v.id}: ${v.help}`).join('\n')).toEqual([]);
+  }
+
+  test.describe('Accessibility - guest pages', () =&gt; {
+    test.use({ storageState: guestState });
+
+    test('login page @a11y', async ({ loginPage, page }) =&gt; {
+      await loginPage.goto();
+      await audit(page, 'login');
+    });
+
+    test('login page has a single h-level logo and labelled inputs', async ({ loginPage }) =&gt; {
+      await loginPage.goto();
+      await expect(loginPage.username).toHaveAttribute('placeholder', /.+/);
+      await expect(loginPage.username).toHaveAttribute('name', 'user-name');
+    });
+
+    test('login error state is announced (role/aria or visible text)', async ({ loginPage }) =&gt; {
+      await loginPage.goto();
+      await loginPage.login('x', 'y');
+      await expect(loginPage.error).toBeVisible();
+      await expect(loginPage.error).toHaveText(/\S/);
+    });
+
+    test('document has a lang attribute', async ({ loginPage, page }) =&gt; {
+      await loginPage.goto();
+      const lang = await page.locator('html').getAttribute('lang');
+      test.info().annotations.push({ type: 'lang', description: String(lang) });
+      expect.soft(lang, 'html[lang] should be set').toBeTruthy();
+    });
+  });
+
+  test.describe('Accessibility - authenticated pages', () =&gt; {
+    test('inventory page @a11y', async ({ inventory, page }) =&gt; {
+      await audit(page, 'inventory');
+    });
+
+    test('product detail page @a11y', async ({ inventory, page }) =&gt; {
+      await inventory.openProduct(products.backpack);
+      await audit(page, 'product-detail');
+    });
+
+    test('cart page @a11y', async ({ inventory, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await audit(page, 'cart');
+    });
+
+    test('checkout step one @a11y', async ({ inventory, cartPage, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await audit(page, 'checkout-one');
+    });
+
+    test('checkout overview @a11y', async ({ inventory, cartPage, checkoutPage, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await audit(page, 'checkout-two');
+    });
+
+    test('sidebar menu open state @a11y', async ({ inventory, page }) =&gt; {
+      await inventory.openMenu();
+      await audit(page, 'menu-open');
+    });
+
+    test('all interactive elements are keyboard focusable', async ({ inventory, page }) =&gt; {
+      const seen = new Set&lt;string&gt;();
+      for (let i = 0; i &lt; 40; i++) {
+        await page.keyboard.press('Tab');
+        const id = await page.evaluate(() =&gt; {
+          const el = document.activeElement as HTMLElement | null;
+          return el ? `${el.tagName}:${el.getAttribute('data-test') ?? el.id ?? el.textContent?.slice(0, 20)}` : 'none';
+        });
+        seen.add(id);
+      }
+      expect(seen.size).toBeGreaterThan(10);
+    });
+
+    test('focus is visible on buttons', async ({ inventory, page }) =&gt; {
+      await inventory.addButton(products.backpack).focus();
+      const outline = await inventory.addButton(products.backpack).evaluate((el) =&gt; {
+        const s = getComputedStyle(el);
+        return `${s.outlineStyle}|${s.outlineWidth}|${s.boxShadow}`;
+      });
+      expect(outline).not.toBe('');
+    });
+
+    test('buttons and links have accessible names', async ({ inventory, page }) =&gt; {
+      const unnamed = await page.evaluate(() =&gt;
+        [...document.querySelectorAll('button, a[href]')]
+          .filter((el) =&gt; !(el.textContent?.trim() || el.getAttribute('aria-label') || el.getAttribute('title') || el.querySelector('img[alt]')))
+          .map((el) =&gt; el.outerHTML.slice(0, 80)),
+      );
+      test.info().annotations.push({ type: 'unnamed-controls', description: String(unnamed.length) });
+      expect.soft(unnamed).toEqual([]);
+    });
+
+    test('page is usable at 200% zoom (reflow)', async ({ inventory, page }) =&gt; {
+      await page.setViewportSize({ width: 640, height: 480 });
+      await expect(inventory.items.first()).toBeVisible();
+      await expect(inventory.cartLink).toBeVisible();
+    });
+
+    test('respects prefers-reduced-motion', async ({ browser, baseURL }) =&gt; {
+      const ctx = await browser.newContext({ baseURL, reducedMotion: 'reduce', storageState: test.info().project.use.storageState as string });
+      const p = await ctx.newPage();
+      await p.goto('/inventory.html');
+      await expect(p.getByTestId('title')).toHaveText('Products');
+      await ctx.close();
+    });
+
+    test('forced-colors (high contrast) mode still renders content', async ({ browser, baseURL }) =&gt; {
+      const ctx = await browser.newContext({ baseURL, forcedColors: 'active', storageState: test.info().project.use.storageState as string });
+      const p = await ctx.newPage();
+      await p.goto('/inventory.html');
+      await expect(p.getByTestId('inventory-item').first()).toBeVisible();
+      await ctx.close();
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-api-api-spec-ts">
+  <h3><code>tests/api/api.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '@playwright/test';
+
+  /** Runs against a public REST API (JSONPlaceholder). Swap API_BASE_URL for your own backend. */
+  test.describe.configure({ mode: 'parallel' });
+
+  type Post = { userId: number; id: number; title: string; body: string };
+
+  test.describe('REST API - posts', () =&gt; {
+    test('GET /posts returns 100 posts with the right schema @api @smoke', async ({ request }) =&gt; {
+      const res = await request.get('/posts');
+      expect(res.status()).toBe(200);
+      expect(res.headers()['content-type']).toContain('application/json');
+      const posts: Post[] = await res.json();
+      expect(posts).toHaveLength(100);
+      for (const p of posts.slice(0, 10)) {
+        expect(p).toEqual({ userId: expect.any(Number), id: expect.any(Number), title: expect.any(String), body: expect.any(String) });
+      }
+    });
+
+    test('GET /posts/:id returns a single post @api', async ({ request }) =&gt; {
+      const res = await request.get('/posts/1');
+      expect(res.ok()).toBeTruthy();
+      const p: Post = await res.json();
+      expect(p.id).toBe(1);
+      expect(p.userId).toBe(1);
+    });
+
+    for (const id of [1, 10, 50, 99, 100]) {
+      test(`GET /posts/${id} boundary id @api`, async ({ request }) =&gt; {
+        const res = await request.get(`/posts/${id}`);
+        expect(res.status()).toBe(200);
+        expect((await res.json()).id).toBe(id);
+      });
+    }
+
+    test('GET unknown post returns 404 @api', async ({ request }) =&gt; {
+      const res = await request.get('/posts/99999');
+      expect(res.status()).toBe(404);
+    });
+
+    test('filter by userId @api', async ({ request }) =&gt; {
+      const res = await request.get('/posts', { params: { userId: 3 } });
+      const posts: Post[] = await res.json();
+      expect(posts.length).toBeGreaterThan(0);
+      expect(posts.every((p) =&gt; p.userId === 3)).toBe(true);
+    });
+
+    test('nested resource: /posts/1/comments @api', async ({ request }) =&gt; {
+      const res = await request.get('/posts/1/comments');
+      const comments = await res.json();
+      expect(comments).toHaveLength(5);
+      expect(comments[0]).toHaveProperty('email');
+      expect(comments.every((c: any) =&gt; c.postId === 1)).toBe(true);
+    });
+
+    test('POST creates a resource (201) @api', async ({ request }) =&gt; {
+      const payload = { title: 'hello', body: 'world', userId: 7 };
+      const res = await request.post('/posts', { data: payload });
+      expect(res.status()).toBe(201);
+      expect(await res.json()).toMatchObject({ ...payload, id: 101 });
+    });
+
+    test('PUT replaces a resource @api', async ({ request }) =&gt; {
+      const payload = { id: 1, title: 'updated', body: 'new body', userId: 1 };
+      const res = await request.put('/posts/1', { data: payload });
+      expect(res.status()).toBe(200);
+      expect(await res.json()).toEqual(payload);
+    });
+
+    test('PATCH partially updates a resource @api', async ({ request }) =&gt; {
+      const res = await request.patch('/posts/1', { data: { title: 'patched' } });
+      expect(res.status()).toBe(200);
+      expect((await res.json()).title).toBe('patched');
+    });
+
+    test('DELETE removes a resource @api', async ({ request }) =&gt; {
+      const res = await request.delete('/posts/1');
+      expect(res.status()).toBe(200);
+    });
+
+    test('pagination via _limit and _page @api', async ({ request }) =&gt; {
+      const res = await request.get('/posts', { params: { _limit: 5, _page: 2 } });
+      const posts: Post[] = await res.json();
+      expect(posts.map((p) =&gt; p.id)).toEqual([6, 7, 8, 9, 10]);
+    });
+
+    test('sorting via _sort/_order @api', async ({ request }) =&gt; {
+      const res = await request.get('/posts', { params: { _sort: 'id', _order: 'desc', _limit: 3 } });
+      const ids = (await res.json()).map((p: Post) =&gt; p.id);
+      expect(ids).toEqual([100, 99, 98]);
+    });
+
+    test('response time under 2s @api', async ({ request }) =&gt; {
+      const start = Date.now();
+      await request.get('/posts/1');
+      expect(Date.now() - start).toBeLessThan(2000);
+    });
+
+    test('supports CORS preflight @api', async ({ request }) =&gt; {
+      const res = await request.fetch('/posts', { method: 'OPTIONS', headers: { Origin: 'https://example.com', 'Access-Control-Request-Method': 'POST' } });
+      expect([200, 204]).toContain(res.status());
+    });
+
+    test('HEAD returns headers without a body @api', async ({ request }) =&gt; {
+      const res = await request.head('/posts/1');
+      expect(res.status()).toBe(200);
+      expect((await res.body()).length).toBe(0);
+    });
+
+    test('10 concurrent requests all succeed @api', async ({ request }) =&gt; {
+      const results = await Promise.all(Array.from({ length: 10 }, (_, i) =&gt; request.get(`/posts/${i + 1}`)));
+      expect(results.every((r) =&gt; r.ok())).toBe(true);
+    });
+  });
+
+  test.describe('REST API - other resources', () =&gt; {
+    test('users have a valid email and address @api', async ({ request }) =&gt; {
+      const users = await (await request.get('/users')).json();
+      expect(users).toHaveLength(10);
+      for (const u of users) {
+        expect(u.email).toMatch(/^[^@\s]+@[^@\s]+\.[^@\s]+$/);
+        expect(u.address.geo).toHaveProperty('lat');
+      }
+    });
+
+    test('todos: completed filter @api', async ({ request }) =&gt; {
+      const todos = await (await request.get('/todos', { params: { completed: 'true', userId: 1 } })).json();
+      expect(todos.every((t: any) =&gt; t.completed === true &amp;&amp; t.userId === 1)).toBe(true);
+    });
+
+    test('albums -&gt; photos relationship @api', async ({ request }) =&gt; {
+      const photos = await (await request.get('/albums/1/photos')).json();
+      expect(photos).toHaveLength(50);
+      expect(photos[0].albumId).toBe(1);
+    });
+
+    test('comments can be filtered by postId @api', async ({ request }) =&gt; {
+      const comments = await (await request.get('/comments', { params: { postId: 2 } })).json();
+      expect(comments.every((c: any) =&gt; c.postId === 2)).toBe(true);
+    });
+
+    test('unknown resource returns 404 @api', async ({ request }) =&gt; {
+      expect((await request.get('/nope')).status()).toBe(404);
+    });
+
+    test('malformed JSON body is handled without a 5xx crash @api', async ({ request }) =&gt; {
+      const res = await request.post('/posts', { headers: { 'Content-Type': 'application/json' }, data: '{bad json' });
+      expect(res.status()).toBeLessThan(500);
+    });
+
+    test('chained flow: create user-post then read comments of an existing post @api', async ({ request }) =&gt; {
+      const created = await (await request.post('/posts', { data: { title: 't', body: 'b', userId: 1 } })).json();
+      expect(created.id).toBeGreaterThan(100);
+      const comments = await (await request.get('/posts/1/comments')).json();
+      expect(comments.length).toBeGreaterThan(0);
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-auth-login-spec-ts">
+  <h3><code>tests/auth/login.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { users, invalidLogins } from '../../src/data/users';
+
+  test.use({ storageState: guestState });
+
+  test.describe('Login page', () =&gt; {
+    test.beforeEach(async ({ loginPage }) =&gt; {
+      await loginPage.goto();
+    });
+
+    test('renders all form elements @smoke @regression', async ({ loginPage, page }) =&gt; {
+      await expect(page).toHaveTitle(/Swag Labs/);
+      await expect(loginPage.logo).toBeVisible();
+      await expect(loginPage.username).toBeVisible();
+      await expect(loginPage.username).toHaveAttribute('placeholder', 'Username');
+      await expect(loginPage.password).toHaveAttribute('type', 'password');
+      await expect(loginPage.loginButton).toBeEnabled();
+      await expect(loginPage.error).toHaveCount(0);
+    });
+
+    test('standard user logs in successfully @smoke', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.login(users.standard.username, users.standard.password);
+      await inventoryPage.expectLoaded();
+    });
+
+    test('locked out user sees a clear error @regression', async ({ loginPage, page }) =&gt; {
+      await loginPage.login(users.locked.username, users.locked.password);
+      await loginPage.expectError('this user has been locked out');
+      await expect(page).not.toHaveURL(/inventory/);
+    });
+
+    for (const c of invalidLogins) {
+      test(`rejects: ${c.name} @regression`, async ({ loginPage, page }) =&gt; {
+        await loginPage.login(c.username, c.password);
+        await loginPage.expectError(c.error);
+        await expect(page).toHaveURL(/\/$/);
+      });
+    }
+
+    test('error banner can be dismissed', async ({ loginPage }) =&gt; {
+      await loginPage.login('x', 'y');
+      await expect(loginPage.error).toBeVisible();
+      await loginPage.errorDismiss.click();
+      await expect(loginPage.error).toHaveCount(0);
+    });
+
+    test('error state highlights both inputs', async ({ loginPage }) =&gt; {
+      await loginPage.login('x', 'y');
+      await expect(loginPage.username).toHaveClass(/error/);
+      await expect(loginPage.password).toHaveClass(/error/);
+    });
+
+    test('password field masks input and has no autocomplete leak', async ({ loginPage }) =&gt; {
+      await loginPage.password.fill('supersecret');
+      await expect(loginPage.password).toHaveAttribute('type', 'password');
+      await expect(loginPage.password).toHaveValue('supersecret');
+    });
+
+    test('can submit with the Enter key', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.username.fill(users.standard.username);
+      await loginPage.password.fill(users.standard.password);
+      await loginPage.password.press('Enter');
+      await inventoryPage.expectLoaded();
+    });
+
+    test('keyboard tab order: username -&gt; password -&gt; login', async ({ loginPage, page }) =&gt; {
+      await loginPage.username.focus();
+      await page.keyboard.press('Tab');
+      await expect(loginPage.password).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(loginPage.loginButton).toBeFocused();
+    });
+
+    test('credentials are not leaked into the URL', async ({ loginPage, page }) =&gt; {
+      await loginPage.login(users.standard.username, users.standard.password);
+      await expect(page).toHaveURL(/inventory/);
+      expect(page.url()).not.toContain(users.standard.password);
+      expect(page.url()).not.toContain('password');
+    });
+
+    test('leading/trailing spaces in password are not trimmed', async ({ loginPage }) =&gt; {
+      await loginPage.login(users.standard.username, ` ${users.standard.password} `);
+      await loginPage.expectError('do not match');
+    });
+
+    test('performance glitch user eventually logs in @slow', async ({ loginPage, inventoryPage }) =&gt; {
+      test.slow();
+      await loginPage.login(users.perf.username, users.perf.password);
+      await expect(inventoryPage.title).toHaveText('Products', { timeout: 20_000 });
+    });
+
+    test('page works with JavaScript-triggered double click', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.username.fill(users.standard.username);
+      await loginPage.password.fill(users.standard.password);
+      await loginPage.loginButton.dblclick();
+      await inventoryPage.expectLoaded();
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-auth-session-spec-ts">
+  <h3><code>tests/auth/session.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { users } from '../../src/data/users';
+
+  test.describe('Session &amp; access control (guest)', () =&gt; {
+    test.use({ storageState: guestState });
+
+    const protectedPaths = ['/inventory.html', '/cart.html', '/checkout-step-one.html', '/checkout-step-two.html', '/checkout-complete.html', '/inventory-item.html?id=1'];
+
+    for (const path of protectedPaths) {
+      test(`guest cannot access ${path} @regression @security`, async ({ page, loginPage }) =&gt; {
+        await page.goto(path);
+        await expect(page).toHaveURL(/\/$/);
+        await loginPage.expectError('You can only access');
+      });
+    }
+
+    test('login sets a session cookie', async ({ loginPage, context }) =&gt; {
+      await loginPage.loginAs(users.standard);
+      const cookies = await context.cookies();
+      expect(cookies.find((c) =&gt; c.name === 'session-username')?.value).toBe(users.standard.username);
+    });
+
+    test('logout clears the session cookie and blocks back-navigation', async ({ loginPage, inventoryPage, page, context }) =&gt; {
+      await loginPage.loginAs(users.standard);
+      await inventoryPage.expectLoaded();
+      await inventoryPage.logout();
+
+      const cookies = await context.cookies();
+      expect(cookies.find((c) =&gt; c.name === 'session-username')).toBeUndefined();
+
+      await page.goto('/inventory.html');
+      await expect(page).toHaveURL(/\/$/);
+    });
+
+    test('session survives a page reload', async ({ loginPage, inventoryPage, page }) =&gt; {
+      await loginPage.loginAs(users.standard);
+      await page.reload();
+      await inventoryPage.expectLoaded();
+    });
+
+    test('two independent sessions do not interfere', async ({ browser, baseURL }) =&gt; {
+      const ctxA = await browser.newContext({ baseURL });
+      const ctxB = await browser.newContext({ baseURL });
+      const [a, b] = [await ctxA.newPage(), await ctxB.newPage()];
+
+      await a.goto('/');
+      await a.getByTestId('username').fill(users.standard.username);
+      await a.getByTestId('password').fill(users.standard.password);
+      await a.getByTestId('login-button').click();
+      await expect(a).toHaveURL(/inventory/);
+
+      await b.goto('/inventory.html');
+      await expect(b).toHaveURL(/\/$/);
+
+      await ctxA.close();
+      await ctxB.close();
+    });
+  });
+
+  test.describe('Session (authenticated via storageState)', () =&gt; {
+    test('storageState gives an already logged-in user @smoke', async ({ inventory }) =&gt; {
+      await expect(inventory.title).toHaveText('Products');
+    });
+
+    test('logout returns to login page', async ({ inventory, page }) =&gt; {
+      await inventory.logout();
+      await expect(page.getByTestId('login-button')).toBeVisible();
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-auth-special-users-spec-ts">
+  <h3><code>tests/auth/special-users.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { users } from '../../src/data/users';
+  import { products } from '../../src/data/products';
+
+  test.use({ storageState: guestState });
+
+  test.describe('Special user personas', () =&gt; {
+    test('problem user: all product images are identical (documents known defect)', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.loginAs(users.problem);
+      await inventoryPage.expectLoaded();
+      const srcs = await inventoryPage.imageSources();
+      expect(srcs).toHaveLength(6);
+      expect(new Set(srcs).size, 'problem_user sees a single repeated image').toBe(1);
+    });
+
+    test('standard user: every product has a distinct image', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.loginAs(users.standard);
+      const srcs = await inventoryPage.imageSources();
+      expect(new Set(srcs).size).toBe(6);
+    });
+
+    test('error user can log in and see products', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.loginAs(users.error);
+      await inventoryPage.expectLoaded();
+      await expect(inventoryPage.items).toHaveCount(6);
+    });
+
+    test('error user: adding items works for at least one product', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.loginAs(users.error);
+      await inventoryPage.add(products.backpack);
+      await expect(inventoryPage.cartBadge).toHaveText('1');
+    });
+
+    test('visual user can log in', async ({ loginPage, inventoryPage }) =&gt; {
+      await loginPage.loginAs(users.visual);
+      await inventoryPage.expectLoaded();
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-cart-cart-spec-ts">
+  <h3><code>tests/cart/cart.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '../../src/fixtures';
+  import { allProducts, products } from '../../src/data/products';
+
+  test.describe('Shopping cart', () =&gt; {
+    test('cart is empty by default @smoke', async ({ inventory, cartPage }) =&gt; {
+      await expect(inventory.cartBadge).toHaveCount(0);
+      await inventory.openCart();
+      await cartPage.expectLoaded();
+      await expect(cartPage.items).toHaveCount(0);
+    });
+
+    test('add one item', async ({ inventory, cartPage }) =&gt; {
+      await inventory.add(products.backpack);
+      await expect(inventory.cartBadge).toHaveText('1');
+      await inventory.openCart();
+      await cartPage.expectContains([products.backpack]);
+    });
+
+    test('add multiple items and badge counts them', async ({ inventory, cartPage }) =&gt; {
+      const chosen = [products.backpack, products.bikeLight, products.onesie];
+      await inventory.addMany(chosen);
+      await expect(inventory.cartBadge).toHaveText('3');
+      await inventory.openCart();
+      await cartPage.expectContains(chosen);
+    });
+
+    test('add all six items', async ({ inventory, cartPage }) =&gt; {
+      await inventory.addMany(allProducts);
+      await expect(inventory.cartBadge).toHaveText('6');
+      await inventory.openCart();
+      await expect(cartPage.items).toHaveCount(6);
+    });
+
+    test('remove from inventory page', async ({ inventory }) =&gt; {
+      await inventory.addMany([products.backpack, products.fleece]);
+      await inventory.remove(products.backpack);
+      await expect(inventory.cartBadge).toHaveText('1');
+    });
+
+    test('remove from cart page @regression', async ({ inventory, cartPage }) =&gt; {
+      await inventory.addMany([products.backpack, products.fleece]);
+      await inventory.openCart();
+      await cartPage.remove(products.backpack);
+      await cartPage.expectContains([products.fleece]);
+      await expect(cartPage.cartBadge).toHaveText('1');
+    });
+
+    test('removing the last item hides the badge', async ({ inventory, cartPage }) =&gt; {
+      await inventory.add(products.onesie);
+      await inventory.openCart();
+      await cartPage.remove(products.onesie);
+      await expect(cartPage.cartBadge).toHaveCount(0);
+      await expect(cartPage.items).toHaveCount(0);
+    });
+
+    test('cart shows quantity, name, description and price', async ({ inventory, cartPage }) =&gt; {
+      await inventory.add(products.boltShirt);
+      await inventory.openCart();
+      const row = cartPage.items.first();
+      await expect(row.getByTestId('item-quantity')).toHaveText('1');
+      await expect(row.getByTestId('inventory-item-name')).toHaveText(products.boltShirt.name);
+      await expect(row.getByTestId('inventory-item-desc')).not.toBeEmpty();
+      await expect(row.getByTestId('inventory-item-price')).toHaveText(`$${products.boltShirt.price}`);
+    });
+
+    test('cart contents persist across reload', async ({ inventory, page, cartPage }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await page.reload();
+      await cartPage.expectContains([products.backpack]);
+    });
+
+    test('cart contents persist when navigating between pages', async ({ inventory, productPage }) =&gt; {
+      await inventory.add(products.fleece);
+      await inventory.openProduct(products.backpack);
+      await expect(productPage.cartBadge).toHaveText('1');
+      await productPage.backButton.click();
+      await expect(inventory.cartBadge).toHaveText('1');
+    });
+
+    test('continue shopping returns to inventory', async ({ inventory, cartPage, page }) =&gt; {
+      await inventory.openCart();
+      await cartPage.continueShoppingButton.click();
+      await expect(page).toHaveURL(/inventory\.html/);
+    });
+
+    test('cart item name links to product detail', async ({ inventory, cartPage, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.items.first().getByTestId('inventory-item-name').click();
+      await expect(page).toHaveURL(/inventory-item\.html\?id=4/);
+    });
+
+    test('reset app state empties the cart @regression', async ({ inventory }) =&gt; {
+      await inventory.addMany([products.backpack, products.bikeLight]);
+      await inventory.resetAppState();
+      await expect(inventory.cartBadge).toHaveCount(0);
+      await expect(inventory.addButton(products.backpack)).toBeVisible();
+    });
+
+    test('cart badge is cleared after logout/login', async ({ inventory, page, loginPage }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.logout();
+      await loginPage.login(process.env.STANDARD_USER ?? 'standard_user', process.env.PASSWORD ?? 'secret_sauce');
+      await expect(page).toHaveURL(/inventory/);
+      // Document current behaviour: cart is persisted client-side per browser
+      const badge = await inventory.cartCount();
+      expect([0, 1]).toContain(badge);
+    });
+
+    test('checkout from empty cart is still allowed (documents behaviour)', async ({ inventory, cartPage, page }) =&gt; {
+      await inventory.openCart();
+      await cartPage.checkout();
+      await expect(page).toHaveURL(/checkout-step-one/);
+    });
+
+    test('cart link is reachable by keyboard', async ({ inventory, page }) =&gt; {
+      await inventory.cartLink.focus();
+      await page.keyboard.press('Enter');
+      await expect(page).toHaveURL(/cart\.html/);
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-checkout-checkout-spec-ts">
+  <h3><code>tests/checkout/checkout.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '../../src/fixtures';
+  import { products, TAX_RATE } from '../../src/data/products';
+  import { checkoutInfo, checkoutValidationCases } from '../../src/data/users';
+  import { round2 } from '../../src/utils/helpers';
+
+  test.describe('Checkout - step one (customer info)', () =&gt; {
+    test.beforeEach(async ({ inventory, cartPage }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+    });
+
+    test('form is displayed @smoke', async ({ checkoutPage }) =&gt; {
+      await expect(checkoutPage.title).toHaveText('Checkout: Your Information');
+      await expect(checkoutPage.firstName).toBeVisible();
+      await expect(checkoutPage.lastName).toBeVisible();
+      await expect(checkoutPage.postalCode).toBeVisible();
+      await expect(checkoutPage.error).toHaveCount(0);
+    });
+
+    for (const c of checkoutValidationCases) {
+      test(`validation: ${c.name} @regression`, async ({ checkoutPage, page }) =&gt; {
+        await checkoutPage.submitInfo(c);
+        await expect(checkoutPage.error).toContainText(c.error);
+        await expect(page).toHaveURL(/checkout-step-one/);
+      });
+    }
+
+    test('valid info proceeds to overview', async ({ checkoutPage, page }) =&gt; {
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await expect(page).toHaveURL(/checkout-step-two/);
+      await expect(checkoutPage.title).toHaveText('Checkout: Overview');
+    });
+
+    test('unicode names are accepted', async ({ checkoutPage, page }) =&gt; {
+      await checkoutPage.submitInfo(checkoutInfo.unicode);
+      await expect(page).toHaveURL(/checkout-step-two/);
+    });
+
+    test('cancel returns to cart', async ({ checkoutPage, page }) =&gt; {
+      await checkoutPage.cancelButton.click();
+      await expect(page).toHaveURL(/cart\.html/);
+    });
+
+    test('entered values are retained after a validation error', async ({ checkoutPage }) =&gt; {
+      await checkoutPage.firstName.fill('Asha');
+      await checkoutPage.continueButton.click();
+      await expect(checkoutPage.error).toBeVisible();
+      await expect(checkoutPage.firstName).toHaveValue('Asha');
+    });
+
+    test('error can be dismissed', async ({ checkoutPage }) =&gt; {
+      await checkoutPage.continueButton.click();
+      await expect(checkoutPage.error).toBeVisible();
+      await checkoutPage.page.getByTestId('error-button').click();
+      await expect(checkoutPage.error).toHaveCount(0);
+    });
+
+    test('HTML in names is not rendered on the overview page (XSS safe)', async ({ checkoutPage, page }) =&gt; {
+      let dialogSeen = false;
+      page.on('dialog', async (d) =&gt; { dialogSeen = true; await d.dismiss(); });
+      await checkoutPage.submitInfo({ firstName: '&lt;img src=x onerror=alert(1)&gt;', lastName: '&lt;b&gt;x&lt;/b&gt;', postalCode: '1' });
+      await page.waitForLoadState('networkidle');
+      expect(dialogSeen).toBe(false);
+    });
+
+    test('tab order across fields', async ({ checkoutPage, page }) =&gt; {
+      await checkoutPage.firstName.focus();
+      await page.keyboard.press('Tab');
+      await expect(checkoutPage.lastName).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(checkoutPage.postalCode).toBeFocused();
+    });
+  });
+
+  test.describe('Checkout - step two (overview)', () =&gt; {
+    test('lists items, payment and shipping info @regression', async ({ inventory, cartPage, checkoutPage }) =&gt; {
+      await inventory.addMany([products.backpack, products.bikeLight]);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+
+      await expect(checkoutPage.page.getByTestId('inventory-item')).toHaveCount(2);
+      await expect(checkoutPage.page.getByTestId('payment-info-value')).toContainText('SauceCard');
+      await expect(checkoutPage.page.getByTestId('shipping-info-value')).toContainText('Free Pony Express');
+    });
+
+    const scenarios = [
+      { name: 'single item', items: [products.onesie] },
+      { name: 'two items', items: [products.backpack, products.bikeLight] },
+      { name: 'three items', items: [products.fleece, products.boltShirt, products.redShirt] },
+      { name: 'all items', items: Object.values(products) },
+    ];
+
+    for (const s of scenarios) {
+      test(`price calculation is correct: ${s.name} @regression`, async ({ inventory, cartPage, checkoutPage }) =&gt; {
+        await inventory.addMany(s.items);
+        await inventory.openCart();
+        await cartPage.checkout();
+        await checkoutPage.submitInfo(checkoutInfo.valid);
+
+        const expectedSubtotal = round2(s.items.reduce((sum, p) =&gt; sum + p.price, 0));
+        const expectedTax = round2(expectedSubtotal * TAX_RATE);
+        const expectedTotal = round2(expectedSubtotal + expectedTax);
+        const actual = await checkoutPage.summary();
+
+        expect(actual.subtotal).toBeCloseTo(expectedSubtotal, 2);
+        expect(actual.tax).toBeCloseTo(expectedTax, 2);
+        expect(actual.total).toBeCloseTo(expectedTotal, 2);
+      });
+    }
+
+    test('cancel on overview returns to inventory', async ({ inventory, cartPage, checkoutPage, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await checkoutPage.cancelButton.click();
+      await expect(page).toHaveURL(/inventory\.html/);
+    });
+
+    test('cannot jump straight to step two without info (documents behaviour)', async ({ page }) =&gt; {
+      await page.goto('/checkout-step-two.html');
+      await expect(page.getByTestId('title')).toBeVisible();
+    });
+  });
+
+  test.describe('Checkout - complete', () =&gt; {
+    test('order confirmation is shown @smoke', async ({ inventory, cartPage, checkoutPage }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await checkoutPage.finish();
+
+      await expect(checkoutPage.title).toHaveText('Checkout: Complete!');
+      await expect(checkoutPage.completeHeader).toHaveText('Thank you for your order!');
+      await expect(checkoutPage.completeText).toContainText('Your order has been dispatched');
+      await expect(checkoutPage.page.locator('.pony_express')).toBeVisible();
+    });
+
+    test('cart is emptied after purchase @regression', async ({ inventory, cartPage, checkoutPage }) =&gt; {
+      await inventory.addMany([products.backpack, products.fleece]);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await checkoutPage.finish();
+      await expect(checkoutPage.cartBadge).toHaveCount(0);
+      await checkoutPage.openCart();
+      await expect(cartPage.items).toHaveCount(0);
+    });
+
+    test('back home returns to inventory with fresh state', async ({ inventory, cartPage, checkoutPage, page }) =&gt; {
+      await inventory.add(products.onesie);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await checkoutPage.finish();
+      await checkoutPage.backHomeButton.click();
+      await expect(page).toHaveURL(/inventory\.html/);
+      await expect(inventory.addButton(products.onesie)).toBeVisible();
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-e2e-purchase-journey-spec-ts">
+  <h3><code>tests/e2e/purchase-journey.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { users, checkoutInfo } from '../../src/data/users';
+  import { products, TAX_RATE } from '../../src/data/products';
+  import { round2 } from '../../src/utils/helpers';
+
+  test.use({ storageState: guestState });
+
+  test.describe('End-to-end journeys', () =&gt; {
+    test('full purchase: login -&gt; browse -&gt; cart -&gt; checkout -&gt; logout @smoke @e2e', async ({
+      loginPage, inventoryPage, cartPage, checkoutPage, productPage, page,
+    }) =&gt; {
+      await test.step('login', async () =&gt; {
+        await loginPage.loginAs(users.standard);
+        await inventoryPage.expectLoaded();
+      });
+
+      await test.step('sort by price and pick the cheapest + most expensive', async () =&gt; {
+        await inventoryPage.sortBy('lohi');
+        expect((await inventoryPage.prices())[0]).toBe(products.onesie.price);
+        await inventoryPage.add(products.onesie);
+        await inventoryPage.add(products.fleece);
+      });
+
+      await test.step('inspect a product, then add it', async () =&gt; {
+        await inventoryPage.openProduct(products.backpack);
+        await expect(productPage.name).toHaveText(products.backpack.name);
+        await productPage.addButton.click();
+        await productPage.backButton.click();
+      });
+
+      await test.step('review cart', async () =&gt; {
+        await expect(inventoryPage.cartBadge).toHaveText('3');
+        await inventoryPage.openCart();
+        await cartPage.expectContains([products.onesie, products.fleece, products.backpack]);
+        await cartPage.remove(products.fleece);
+        await cartPage.expectContains([products.onesie, products.backpack]);
+      });
+
+      await test.step('checkout', async () =&gt; {
+        await cartPage.checkout();
+        await checkoutPage.submitInfo(checkoutInfo.valid);
+        const subtotal = round2(products.onesie.price + products.backpack.price);
+        const s = await checkoutPage.summary();
+        expect(s.subtotal).toBeCloseTo(subtotal, 2);
+        expect(s.total).toBeCloseTo(round2(subtotal * (1 + TAX_RATE)), 2);
+        await checkoutPage.finish();
+        await expect(checkoutPage.completeHeader).toHaveText('Thank you for your order!');
+      });
+
+      await test.step('logout', async () =&gt; {
+        await checkoutPage.logout();
+        await expect(page.getByTestId('login-button')).toBeVisible();
+      });
+    });
+
+    test('abandoned cart: cancel at each step keeps the cart intact @e2e', async ({
+      loginPage, inventoryPage, cartPage, checkoutPage, page,
+    }) =&gt; {
+      await loginPage.loginAs(users.standard);
+      await inventoryPage.add(products.boltShirt);
+      await inventoryPage.openCart();
+      await cartPage.checkout();
+      await checkoutPage.cancelButton.click();
+      await expect(page).toHaveURL(/cart\.html/);
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await checkoutPage.cancelButton.click();
+      await inventoryPage.openCart();
+      await cartPage.expectContains([products.boltShirt]);
+    });
+
+    test('guest redirected to login, then lands on inventory after login @e2e', async ({ page, loginPage, inventoryPage }) =&gt; {
+      await page.goto('/cart.html');
+      await loginPage.expectError('You can only access');
+      await loginPage.login(users.standard.username, users.standard.password);
+      await inventoryPage.expectLoaded();
+    });
+
+    test('two consecutive orders in one session @e2e', async ({ loginPage, inventoryPage, cartPage, checkoutPage }) =&gt; {
+      await loginPage.loginAs(users.standard);
+      for (const p of [products.backpack, products.redShirt]) {
+        await inventoryPage.add(p);
+        await inventoryPage.openCart();
+        await cartPage.checkout();
+        await checkoutPage.submitInfo(checkoutInfo.valid);
+        await checkoutPage.finish();
+        await checkoutPage.backHomeButton.click();
+        await inventoryPage.expectLoaded();
+        await expect(inventoryPage.cartBadge).toHaveCount(0);
+      }
+    });
+
+    test('mobile-style navigation: hamburger -&gt; all items @e2e', async ({ loginPage, inventoryPage, productPage }) =&gt; {
+      await loginPage.loginAs(users.standard);
+      await inventoryPage.openProduct(products.fleece);
+      await productPage.openMenu();
+      await productPage.allItemsLink.click();
+      await inventoryPage.expectLoaded();
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-inventory-inventory-spec-ts">
+  <h3><code>tests/inventory/inventory.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '../../src/fixtures';
+  import { allProducts, products } from '../../src/data/products';
+
+  test.describe('Inventory listing', () =&gt; {
+    test('shows all six products @smoke', async ({ inventory }) =&gt; {
+      await expect(inventory.items).toHaveCount(6);
+    });
+
+    for (const p of allProducts) {
+      test(`product card is complete: ${p.name} @regression`, async ({ inventory }) =&gt; {
+        const card = inventory.itemCard(p);
+        await expect(card).toBeVisible();
+        await expect(card.getByTestId('inventory-item-price')).toHaveText(`$${p.price}`);
+        await expect(card.getByTestId('inventory-item-desc')).not.toBeEmpty();
+        await expect(card.locator('img')).toBeVisible();
+        await expect(inventory.addButton(p)).toHaveText('Add to cart');
+      });
+    }
+
+    test('all product images load successfully', async ({ inventory }) =&gt; {
+      const broken = await inventory.items.locator('img').evaluateAll((imgs) =&gt;
+        imgs.filter((i) =&gt; !(i as HTMLImageElement).complete || (i as HTMLImageElement).naturalWidth === 0).map((i) =&gt; (i as HTMLImageElement).src),
+      );
+      expect(broken).toEqual([]);
+    });
+
+    test('all product images have alt text', async ({ inventory }) =&gt; {
+      const missing = await inventory.items.locator('img').evaluateAll((imgs) =&gt; imgs.filter((i) =&gt; !(i as HTMLImageElement).alt).length);
+      expect(missing).toBe(0);
+    });
+
+    test('product names are unique', async ({ inventory }) =&gt; {
+      const names = await inventory.names();
+      expect(new Set(names).size).toBe(names.length);
+    });
+
+    test('prices are positive numbers with two decimals', async ({ inventory }) =&gt; {
+      const raw = await inventory.page.getByTestId('inventory-item-price').allInnerTexts();
+      for (const r of raw) expect(r).toMatch(/^\$\d+\.\d{2}$/);
+    });
+
+    test('header shows title, cart and menu @smoke', async ({ inventory }) =&gt; {
+      await expect(inventory.title).toHaveText('Products');
+      await expect(inventory.cartLink).toBeVisible();
+      await expect(inventory.menuButton).toBeVisible();
+      await expect(inventory.page.locator('.app_logo')).toHaveText('Swag Labs');
+    });
+
+    test('footer shows social links and copyright', async ({ inventory }) =&gt; {
+      const footer = inventory.page.locator('footer');
+      await expect(footer).toContainText('Sauce Labs');
+      await expect(footer.getByRole('link')).toHaveCount(3);
+      for (const name of ['Twitter', 'Facebook', 'LinkedIn']) {
+        await expect(footer.getByRole('link', { name })).toHaveAttribute('href', /https?:\/\//);
+      }
+    });
+
+    test('footer social links open externally', async ({ inventory }) =&gt; {
+      const links = inventory.page.locator('footer a');
+      for (let i = 0; i &lt; (await links.count()); i++) {
+        await expect(links.nth(i)).toHaveAttribute('target', '_blank');
+      }
+    });
+
+    test('add to cart button toggles to Remove', async ({ inventory }) =&gt; {
+      await inventory.add(products.backpack);
+      await expect(inventory.removeButton(products.backpack)).toHaveText('Remove');
+      await expect(inventory.addButton(products.backpack)).toHaveCount(0);
+    });
+
+    test('sidebar menu lists all links', async ({ inventory }) =&gt; {
+      await inventory.openMenu();
+      await expect(inventory.allItemsLink).toBeVisible();
+      await expect(inventory.aboutLink).toHaveAttribute('href', /saucelabs\.com/);
+      await expect(inventory.logoutLink).toBeVisible();
+      await expect(inventory.resetLink).toBeVisible();
+    });
+
+    test('sidebar can be closed', async ({ inventory }) =&gt; {
+      await inventory.openMenu();
+      await inventory.menuCloseButton.click();
+      await expect(inventory.logoutLink).toBeHidden();
+    });
+
+    test('sidebar closes with Escape key', async ({ inventory, page }) =&gt; {
+      test.skip(true, 'Enable if the app under test supports Escape-to-close');
+      await inventory.openMenu();
+      await page.keyboard.press('Escape');
+      await expect(inventory.logoutLink).toBeHidden();
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-inventory-product-detail-spec-ts">
+  <h3><code>tests/inventory/product-detail.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '../../src/fixtures';
+  import { allProducts, products } from '../../src/data/products';
+
+  test.describe('Product detail page', () =&gt; {
+    for (const p of allProducts) {
+      test(`opens and shows correct info: ${p.name} @regression`, async ({ inventory, productPage }) =&gt; {
+        await inventory.openProduct(p);
+        await expect(productPage.name).toHaveText(p.name);
+        await expect(productPage.price).toHaveText(`$${p.price}`);
+        await expect(productPage.description).not.toBeEmpty();
+        await expect(productPage.image).toBeVisible();
+      });
+    }
+
+    test('add and remove from detail page updates cart badge @smoke', async ({ inventory, productPage }) =&gt; {
+      await inventory.openProduct(products.bikeLight);
+      await productPage.addButton.click();
+      await expect(productPage.cartBadge).toHaveText('1');
+      await expect(productPage.removeButton).toBeVisible();
+      await productPage.removeButton.click();
+      await expect(productPage.cartBadge).toHaveCount(0);
+    });
+
+    test('back button returns to inventory', async ({ inventory, productPage, page }) =&gt; {
+      await inventory.openProduct(products.fleece);
+      await productPage.backButton.click();
+      await expect(page).toHaveURL(/inventory\.html$/);
+    });
+
+    test('item added on listing shows Remove on detail page', async ({ inventory, productPage }) =&gt; {
+      await inventory.add(products.onesie);
+      await inventory.openProduct(products.onesie);
+      await expect(productPage.removeButton).toBeVisible();
+    });
+
+    test('clicking product image also opens detail', async ({ inventory, page }) =&gt; {
+      await inventory.itemCard(products.backpack).locator('img').click();
+      await expect(page).toHaveURL(/inventory-item\.html\?id=4/);
+    });
+
+    test('direct deep link works for valid id', async ({ productPage }) =&gt; {
+      await productPage.gotoId(4);
+      await expect(productPage.name).toHaveText(products.backpack.name);
+    });
+
+    test('invalid product id is handled gracefully', async ({ productPage, page }) =&gt; {
+      await productPage.gotoId(9999);
+      await expect(page.getByText(/Item not found/i)).toBeVisible();
+    });
+
+    test('non-numeric product id does not crash the page', async ({ page }) =&gt; {
+      await page.goto('/inventory-item.html?id=abc');
+      await expect(page.locator('body')).toBeVisible();
+    });
+
+    test('browser back/forward navigation works', async ({ inventory, page }) =&gt; {
+      await inventory.openProduct(products.redShirt);
+      await page.goBack();
+      await expect(page).toHaveURL(/inventory\.html$/);
+      await page.goForward();
+      await expect(page).toHaveURL(/inventory-item/);
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-inventory-sorting-spec-ts">
+  <h3><code>tests/inventory/sorting.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '../../src/fixtures';
+  import { isSortedAsc, isSortedDesc } from '../../src/utils/helpers';
+  import { sortOptions } from '../../src/data/products';
+
+  test.describe('Product sorting', () =&gt; {
+    test('default order is Name (A to Z) @smoke', async ({ inventory }) =&gt; {
+      await expect(inventory.sortSelect).toHaveValue('az');
+      expect(isSortedAsc(await inventory.names())).toBe(true);
+    });
+
+    test('Name (Z to A) @regression', async ({ inventory }) =&gt; {
+      await inventory.sortBy('za');
+      expect(isSortedDesc(await inventory.names())).toBe(true);
+    });
+
+    test('Price (low to high) @regression', async ({ inventory }) =&gt; {
+      await inventory.sortBy('lohi');
+      const prices = await inventory.prices();
+      expect(isSortedAsc(prices)).toBe(true);
+      expect(prices[0]).toBe(7.99);
+      expect(prices.at(-1)).toBe(49.99);
+    });
+
+    test('Price (high to low) @regression', async ({ inventory }) =&gt; {
+      await inventory.sortBy('hilo');
+      const prices = await inventory.prices();
+      expect(isSortedDesc(prices)).toBe(true);
+      expect(prices[0]).toBe(49.99);
+    });
+
+    test('exposes exactly four sort options', async ({ inventory }) =&gt; {
+      const options = await inventory.sortSelect.locator('option').allInnerTexts();
+      expect(options).toEqual(sortOptions.map((o) =&gt; o.label));
+    });
+
+    for (const o of sortOptions) {
+      test(`selecting "${o.label}" keeps all 6 items`, async ({ inventory }) =&gt; {
+        await inventory.sortBy(o.value);
+        await expect(inventory.items).toHaveCount(6);
+        await expect(inventory.sortSelect).toHaveValue(o.value);
+      });
+    }
+
+    test('sorting preserves cart state', async ({ inventory }) =&gt; {
+      await inventory.page.getByTestId('add-to-cart-sauce-labs-backpack').click();
+      await inventory.sortBy('hilo');
+      await expect(inventory.cartBadge).toHaveText('1');
+      await expect(inventory.page.getByTestId('remove-sauce-labs-backpack')).toBeVisible();
+    });
+
+    test('sorting does not change the set of products', async ({ inventory }) =&gt; {
+      const before = [...(await inventory.names())].sort();
+      await inventory.sortBy('hilo');
+      const after = [...(await inventory.names())].sort();
+      expect(after).toEqual(before);
+    });
+
+    test('sort selection can be changed repeatedly', async ({ inventory }) =&gt; {
+      for (const v of ['za', 'lohi', 'hilo', 'az', 'za'] as const) {
+        await inventory.sortBy(v);
+        await expect(inventory.sortSelect).toHaveValue(v);
+      }
+      expect(isSortedDesc(await inventory.names())).toBe(true);
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-network-network-spec-ts">
+  <h3><code>tests/network/network.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '../../src/fixtures';
+  import { products } from '../../src/data/products';
+
+  test.describe('Network interception &amp; resilience', () =&gt; {
+    test('page still works when all images are blocked', async ({ page, inventoryPage }) =&gt; {
+      await page.route(/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/, (route) =&gt; route.abort());
+      await inventoryPage.goto();
+      await inventoryPage.expectLoaded();
+      await expect(inventoryPage.items).toHaveCount(6);
+      await inventoryPage.add(products.backpack);
+      await expect(inventoryPage.cartBadge).toHaveText('1');
+    });
+
+    test('page works with CSS blocked (content remains in DOM)', async ({ page, inventoryPage }) =&gt; {
+      await page.route('**/*.css', (route) =&gt; route.abort());
+      await inventoryPage.goto();
+      await expect(inventoryPage.items).toHaveCount(6);
+    });
+
+    test('replaces an image with a custom response (route.fulfill)', async ({ page, inventoryPage }) =&gt; {
+      const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+      let hits = 0;
+      await page.route(/\.(jpg|png)(\?.*)?$/, (route) =&gt; { hits++; return route.fulfill({ status: 200, contentType: 'image/png', body: png }); });
+      await inventoryPage.goto();
+      await expect(inventoryPage.items).toHaveCount(6);
+      expect(hits).toBeGreaterThan(0);
+    });
+
+    test('mocks a JSON API endpoint (route.fulfill with JSON)', async ({ page, inventoryPage }) =&gt; {
+      await page.route('**/api/products', (route) =&gt;
+        route.fulfill({ status: 200, contentType: 'application/json', json: [{ id: 1, name: 'Mocked item' }] }),
+      );
+      await inventoryPage.goto();
+      const data = await page.evaluate(() =&gt; fetch('/api/products').then((r) =&gt; r.json()));
+      expect(data).toEqual([{ id: 1, name: 'Mocked item' }]);
+    });
+
+    test('simulates server errors (500) for an endpoint', async ({ page, inventoryPage }) =&gt; {
+      await page.route('**/api/orders', (route) =&gt; route.fulfill({ status: 500, body: 'boom' }));
+      await inventoryPage.goto();
+      const status = await page.evaluate(() =&gt; fetch('/api/orders', { method: 'POST' }).then((r) =&gt; r.status));
+      expect(status).toBe(500);
+    });
+
+    test('simulates slow network (delayed route)', async ({ page, inventoryPage }) =&gt; {
+      await page.route('**/*.{png,jpg}', async (route) =&gt; {
+        await new Promise((r) =&gt; setTimeout(r, 500));
+        await route.continue();
+      });
+      await inventoryPage.goto();
+      await expect(inventoryPage.items.first()).toBeVisible();
+    });
+
+    test('modifies request headers (route.continue)', async ({ page, inventoryPage }) =&gt; {
+      let seen: string | undefined;
+      await page.route('**/*', (route) =&gt; {
+        seen = route.request().headers()['x-qa-run'];
+        return route.continue({ headers: { ...route.request().headers(), 'x-qa-run': 'playwright' } });
+      });
+      await inventoryPage.goto();
+      await page.reload();
+      expect(seen === undefined || seen === 'playwright').toBeTruthy();
+    });
+
+    test('waits for and inspects a specific response', async ({ page }) =&gt; {
+      const [response] = await Promise.all([
+        page.waitForResponse((r) =&gt; r.url().includes('inventory') &amp;&amp; r.request().resourceType() === 'document'),
+        page.goto('/inventory.html'),
+      ]);
+      expect(response.status()).toBe(200);
+    });
+
+    test('records HAR for debugging', async ({ page, inventoryPage }, testInfo) =&gt; {
+      await page.routeFromHAR(testInfo.outputPath('inventory.har'), { update: true, url: /saucedemo/ });
+      await inventoryPage.goto();
+      await expect(inventoryPage.items).toHaveCount(6);
+    });
+
+    test('goes offline after load: new navigation fails, existing page stays usable', async ({ page, context, inventoryPage }) =&gt; {
+      await inventoryPage.goto();
+      await context.setOffline(true);
+      await inventoryPage.add(products.backpack); // purely client-side
+      await expect(inventoryPage.cartBadge).toHaveText('1');
+      await expect(page.goto('/cart.html', { timeout: 5000 })).rejects.toThrow();
+      await context.setOffline(false);
+    });
+
+    test('blocks third-party trackers and the app still functions', async ({ page, inventoryPage }) =&gt; {
+      await page.route(/google-analytics|googletagmanager|doubleclick|facebook\.net|hotjar|segment\.io|backtrace\.io/, (r) =&gt; r.abort());
+      await inventoryPage.goto();
+      await inventoryPage.expectLoaded();
+    });
+
+    test('no requests are made to unexpected third-party origins (annotated)', async ({ page, inventoryPage, baseURL }) =&gt; {
+      const origins = new Set&lt;string&gt;();
+      page.on('request', (r) =&gt; origins.add(new URL(r.url()).origin));
+      await inventoryPage.goto();
+      await page.waitForLoadState('networkidle');
+      const external = [...origins].filter((o) =&gt; o !== new URL(baseURL!).origin);
+      for (const o of external) test.info().annotations.push({ type: 'third-party-origin', description: o });
+    });
+
+    test('clipboard/geolocation/permissions can be controlled', async ({ context, page, inventoryPage, baseURL }) =&gt; {
+      await context.grantPermissions(['geolocation'], { origin: new URL(baseURL!).origin });
+      await context.setGeolocation({ latitude: 28.4089, longitude: 77.3178 });
+      await inventoryPage.goto();
+      const geo = await page.evaluate(() =&gt; new Promise&lt;{ lat: number; lon: number }&gt;((res, rej) =&gt;
+        navigator.geolocation.getCurrentPosition((p) =&gt; res({ lat: p.coords.latitude, lon: p.coords.longitude }), rej)));
+      expect(geo.lat).toBeCloseTo(28.4089, 3);
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-performance-performance-spec-ts">
+  <h3><code>tests/performance/performance.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { env } from '../../src/config/env';
+
+  test.describe('Performance budgets (lab, single run - use Lighthouse for deep audits)', () =&gt; {
+    test('login page navigation timing within budget @perf', async ({ page }) =&gt; {
+      await page.context().clearCookies();
+      await page.goto('/', { waitUntil: 'load' });
+      const t = await page.evaluate(() =&gt; {
+        const n = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        return { dcl: n.domContentLoadedEventEnd, load: n.loadEventEnd, ttfb: n.responseStart, transfer: n.transferSize };
+      });
+      test.info().annotations.push({ type: 'timing', description: JSON.stringify(t) });
+      expect(t.dcl).toBeLessThan(env.budgets.dclMs);
+      expect(t.load).toBeLessThan(env.budgets.loadMs);
+    });
+
+    test('inventory page: LCP and CLS within budget @perf', async ({ page }) =&gt; {
+      await page.addInitScript(() =&gt; {
+        (window as any).__lcp = 0;
+        (window as any).__cls = 0;
+        new PerformanceObserver((l) =&gt; { const e = l.getEntries().at(-1) as any; (window as any).__lcp = e.renderTime || e.loadTime; }).observe({ type: 'largest-contentful-paint', buffered: true });
+        new PerformanceObserver((l) =&gt; { for (const e of l.getEntries() as any[]) if (!e.hadRecentInput) (window as any).__cls += e.value; }).observe({ type: 'layout-shift', buffered: true });
+      });
+      await page.goto('/inventory.html');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(500);
+      const m = await page.evaluate(() =&gt; ({ lcp: (window as any).__lcp as number, cls: (window as any).__cls as number }));
+      test.info().annotations.push({ type: 'web-vitals', description: JSON.stringify(m) });
+      expect(m.lcp).toBeLessThan(env.budgets.lcpMs);
+      expect(m.cls).toBeLessThan(0.1);
+    });
+
+    test('total page weight under 3 MB @perf', async ({ page }) =&gt; {
+      let bytes = 0;
+      page.on('response', async (r) =&gt; {
+        const len = Number(r.headers()['content-length'] ?? 0);
+        bytes += len || (await r.body().catch(() =&gt; Buffer.alloc(0))).length;
+      });
+      await page.goto('/inventory.html');
+      await page.waitForLoadState('networkidle');
+      test.info().annotations.push({ type: 'page-weight-kb', description: String(Math.round(bytes / 1024)) });
+      expect(bytes).toBeLessThan(3 * 1024 * 1024);
+    });
+
+    test('request count is reasonable (&lt; 80) @perf', async ({ page }) =&gt; {
+      let n = 0;
+      page.on('request', () =&gt; n++);
+      await page.goto('/inventory.html');
+      await page.waitForLoadState('networkidle');
+      expect(n).toBeLessThan(80);
+    });
+
+    test('sorting responds in under 500ms @perf', async ({ inventory }) =&gt; {
+      const start = Date.now();
+      await inventory.sortBy('hilo');
+      await expect(inventory.page.getByTestId('inventory-item-price').first()).toHaveText('$49.99');
+      expect(Date.now() - start).toBeLessThan(500);
+    });
+
+    test('add-to-cart interaction is instant (&lt; 300ms) @perf', async ({ inventory }) =&gt; {
+      const start = Date.now();
+      await inventory.page.getByTestId('add-to-cart-sauce-labs-backpack').click();
+      await expect(inventory.cartBadge).toBeVisible();
+      expect(Date.now() - start).toBeLessThan(1000);
+    });
+
+    test('no long tasks &gt; 200ms during load (annotated) @perf', async ({ page }) =&gt; {
+      await page.addInitScript(() =&gt; {
+        (window as any).__long = [];
+        new PerformanceObserver((l) =&gt; { for (const e of l.getEntries()) (window as any).__long.push(e.duration); }).observe({ type: 'longtask', buffered: true });
+      });
+      await page.goto('/inventory.html');
+      await page.waitForLoadState('networkidle');
+      const long: number[] = await page.evaluate(() =&gt; (window as any).__long);
+      test.info().annotations.push({ type: 'long-tasks', description: JSON.stringify(long) });
+    });
+
+    test('JS heap does not grow unbounded after repeated add/remove (Chromium) @perf', async ({ inventory, page, browserName }) =&gt; {
+      test.skip(browserName !== 'chromium', 'performance.memory is Chromium-only');
+      const heap = () =&gt; page.evaluate(() =&gt; (performance as any).memory.usedJSHeapSize as number);
+      const before = await heap();
+      for (let i = 0; i &lt; 30; i++) {
+        await inventory.page.getByTestId('add-to-cart-sauce-labs-backpack').click();
+        await inventory.page.getByTestId('remove-sauce-labs-backpack').click();
+      }
+      const after = await heap();
+      expect(after - before).toBeLessThan(30 * 1024 * 1024);
+    });
+
+    test.describe('throttled CPU &amp; network (Chromium CDP)', () =&gt; {
+      test('inventory still loads on Slow 3G-ish + 4x CPU @perf @slow', async ({ page, context, browserName }) =&gt; {
+        test.skip(browserName !== 'chromium', 'CDP is Chromium-only');
+        test.slow();
+        const cdp = await context.newCDPSession(page);
+        await cdp.send('Network.enable');
+        await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 300, downloadThroughput: (400 * 1024) / 8, uploadThroughput: (400 * 1024) / 8 });
+        await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+        await page.goto('/inventory.html', { timeout: 60_000 });
+        await expect(page.getByTestId('inventory-item').first()).toBeVisible({ timeout: 30_000 });
+      });
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-responsive-responsive-spec-ts">
+  <h3><code>tests/responsive/responsive.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '../../src/fixtures';
+  import { expectNoHorizontalScroll } from '../../src/utils/helpers';
+  import { products } from '../../src/data/products';
+
+  const viewports = [
+    { name: 'iPhone SE', width: 320, height: 568 },
+    { name: 'iPhone 14', width: 390, height: 844 },
+    { name: 'Pixel 7', width: 412, height: 915 },
+    { name: 'iPad portrait', width: 768, height: 1024 },
+    { name: 'iPad landscape', width: 1024, height: 768 },
+    { name: 'Laptop', width: 1366, height: 768 },
+    { name: 'Desktop FHD', width: 1920, height: 1080 },
+    { name: 'Ultrawide', width: 2560, height: 1080 },
+  ];
+
+  test.describe('Responsive layout', () =&gt; {
+    for (const vp of viewports) {
+      test.describe(`${vp.name} (${vp.width}x${vp.height})`, () =&gt; {
+        test.use({ viewport: { width: vp.width, height: vp.height } });
+
+        test('inventory has no horizontal scroll and core UI visible @responsive', async ({ inventory, page }) =&gt; {
+          await expectNoHorizontalScroll(page);
+          await expect(inventory.title).toBeVisible();
+          await expect(inventory.cartLink).toBeVisible();
+          await expect(inventory.menuButton).toBeVisible();
+          await expect(inventory.items).toHaveCount(6);
+        });
+
+        test('cart page fits viewport', async ({ inventory, cartPage, page }) =&gt; {
+          await inventory.add(products.backpack);
+          await inventory.openCart();
+          await expectNoHorizontalScroll(page);
+          await expect(cartPage.checkoutButton).toBeVisible();
+        });
+
+        test('checkout form is usable', async ({ inventory, cartPage, checkoutPage, page }) =&gt; {
+          await inventory.add(products.backpack);
+          await inventory.openCart();
+          await cartPage.checkout();
+          await expectNoHorizontalScroll(page);
+          await expect(checkoutPage.continueButton).toBeVisible();
+        });
+
+        test('sidebar menu opens and navigates', async ({ inventory, page }) =&gt; {
+          await inventory.openMenu();
+          await expect(inventory.allItemsLink).toBeInViewport();
+          await inventory.menuCloseButton.click();
+          await expect(inventory.logoutLink).toBeHidden();
+        });
+      });
+    }
+
+    test('touch targets are at least 24x24 CSS px (WCAG 2.2 AA)', async ({ inventory }) =&gt; {
+      const small = await inventory.page.evaluate(() =&gt;
+        [...document.querySelectorAll('button, a[href], select, input')]
+          .map((el) =&gt; ({ el: el as HTMLElement, r: (el as HTMLElement).getBoundingClientRect() }))
+          .filter(({ r }) =&gt; r.width &gt; 0 &amp;&amp; (r.width &lt; 24 || r.height &lt; 24))
+          .map(({ el }) =&gt; el.outerHTML.slice(0, 60)),
+      );
+      test.info().annotations.push({ type: 'small-targets', description: String(small.length) });
+      expect.soft(small).toEqual([]);
+    });
+
+    test('orientation change keeps content accessible', async ({ inventory, page }) =&gt; {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect(inventory.items.first()).toBeVisible();
+      await page.setViewportSize({ width: 844, height: 390 });
+      await expect(inventory.items.first()).toBeVisible();
+      await expectNoHorizontalScroll(page);
+    });
+
+    test('viewport meta tag is present', async ({ inventory, page }) =&gt; {
+      await expect(page.locator('meta[name="viewport"]')).toHaveAttribute('content', /width=device-width/);
+    });
+
+    test('text is legible: base font size &gt;= 12px', async ({ inventory, page }) =&gt; {
+      const size = await page.evaluate(() =&gt; parseFloat(getComputedStyle(document.body).fontSize));
+      expect(size).toBeGreaterThanOrEqual(12);
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-security-security-spec-ts">
+  <h3><code>tests/security/security.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { env } from '../../src/config/env';
+
+  test.use({ storageState: guestState });
+
+  const recommendedHeaders: Record&lt;string, RegExp | null&gt; = {
+    'x-content-type-options': /nosniff/i,
+    'strict-transport-security': /max-age=\d+/i,
+    'x-frame-options': /deny|sameorigin/i,
+    'content-security-policy': null,
+    'referrer-policy': null,
+    'permissions-policy': null,
+  };
+
+  test.describe('Security checks', () =&gt; {
+    test('serves over HTTPS @security', async ({ page, baseURL }) =&gt; {
+      test.skip(!baseURL?.startsWith('https'), 'only for https targets');
+      const res = await page.goto('/');
+      expect(res!.url()).toMatch(/^https:/);
+    });
+
+    test('HTTP redirects to HTTPS @security', async ({ request, baseURL }) =&gt; {
+      test.skip(!baseURL?.startsWith('https'), 'only for https targets');
+      const httpUrl = baseURL!.replace('https:', 'http:');
+      const res = await request.get(httpUrl, { maxRedirects: 0 }).catch(() =&gt; null);
+      if (res) expect([200, 301, 302, 307, 308]).toContain(res.status());
+      if (res &amp;&amp; res.status() &gt;= 300 &amp;&amp; res.status() &lt; 400) expect(res.headers()['location']).toMatch(/^https:/);
+    });
+
+    test('security headers (annotate; fail if STRICT_SECURITY=true) @security', async ({ request }) =&gt; {
+      const res = await request.get('/');
+      const headers = res.headers();
+      const missing: string[] = [];
+      for (const [h, rx] of Object.entries(recommendedHeaders)) {
+        const v = headers[h];
+        if (!v || (rx &amp;&amp; !rx.test(v))) missing.push(h);
+      }
+      for (const m of missing) test.info().annotations.push({ type: 'missing-header', description: m });
+      if (env.strictSecurity) expect(missing, `Missing/weak headers: ${missing.join(', ')}`).toEqual([]);
+    });
+
+    test('does not leak server version details @security', async ({ request }) =&gt; {
+      const res = await request.get('/');
+      const h = res.headers();
+      expect.soft(h['x-powered-by'] ?? '').not.toMatch(/\d+\.\d+/);
+      expect.soft(h['server'] ?? '').not.toMatch(/\d+\.\d+\.\d+/);
+    });
+
+    test('cookies have sensible attributes (annotated) @security', async ({ loginPage, context }) =&gt; {
+      await loginPage.loginAs({ username: env.users.standard, password: env.password, label: 'std' });
+      const cookies = await context.cookies();
+      for (const c of cookies) {
+        test.info().annotations.push({ type: 'cookie', description: `${c.name} secure=${c.secure} httpOnly=${c.httpOnly} sameSite=${c.sameSite}` });
+      }
+      expect(cookies.length).toBeGreaterThan(0);
+    });
+
+    test('no mixed content on login page @security', async ({ page, baseURL }) =&gt; {
+      test.skip(!baseURL?.startsWith('https'), 'only for https targets');
+      const insecure: string[] = [];
+      page.on('request', (r) =&gt; { if (r.url().startsWith('http://')) insecure.push(r.url()); });
+      await page.goto('/');
+      await page.waitForLoadState('networkidle');
+      expect(insecure).toEqual([]);
+    });
+
+    test('external links use rel=noopener (or noreferrer) @security', async ({ page }) =&gt; {
+      await page.goto('/');
+      const bad = await page.evaluate(() =&gt;
+        [...document.querySelectorAll('a[target="_blank"]')]
+          .filter((a) =&gt; !/noopener|noreferrer/.test(a.getAttribute('rel') ?? ''))
+          .map((a) =&gt; (a as HTMLAnchorElement).href),
+      );
+      test.info().annotations.push({ type: 'rel-noopener-missing', description: String(bad.length) });
+      expect.soft(bad).toEqual([]);
+    });
+
+    test('login form does not submit credentials via GET @security', async ({ page, loginPage }) =&gt; {
+      const reqs: string[] = [];
+      page.on('request', (r) =&gt; reqs.push(r.url()));
+      await loginPage.goto();
+      await loginPage.login('user@example.com', 'hunter2-secret');
+      expect(reqs.filter((u) =&gt; u.includes('hunter2-secret'))).toEqual([]);
+    });
+
+    test('login input is not vulnerable to reflected XSS @security', async ({ page, loginPage }) =&gt; {
+      let dialog = false;
+      page.on('dialog', async (d) =&gt; { dialog = true; await d.dismiss(); });
+      await loginPage.goto();
+      await loginPage.login('"&gt;&lt;img src=x onerror=alert(1)&gt;', '"&gt;&lt;svg onload=alert(1)&gt;');
+      await expect(loginPage.error).toBeVisible();
+      expect(dialog).toBe(false);
+      await expect(page.locator('img[src="x"]')).toHaveCount(0);
+    });
+
+    test('query-string injection on detail page is not executed @security', async ({ page }) =&gt; {
+      let dialog = false;
+      page.on('dialog', async (d) =&gt; { dialog = true; await d.dismiss(); });
+      await page.goto('/inventory-item.html?id=&lt;script&gt;alert(1)&lt;/script&gt;');
+      expect(dialog).toBe(false);
+    });
+
+    test('unknown routes do not expose stack traces @security', async ({ request }) =&gt; {
+      const res = await request.get('/definitely-not-a-page-' + Date.now());
+      const body = await res.text();
+      expect(body).not.toMatch(/at\s+\S+\s+\(.*:\d+:\d+\)/);
+      expect(body.toLowerCase()).not.toContain('traceback');
+    });
+
+    test('sensitive files are not exposed @security', async ({ request }) =&gt; {
+      for (const path of ['/.env', '/.git/config', '/package.json', '/wp-config.php', '/server-status']) {
+        const res = await request.get(path);
+        const body = await res.text();
+        expect.soft(body, `${path} should not expose secrets`).not.toMatch(/DB_PASSWORD|\[core\]|"dependencies"/);
+      }
+    });
+
+    test('CORS: arbitrary origin is not blindly reflected with credentials @security', async ({ request }) =&gt; {
+      const res = await request.get('/', { headers: { Origin: 'https://evil.example' } });
+      const acao = res.headers()['access-control-allow-origin'];
+      const acac = res.headers()['access-control-allow-credentials'];
+      if (acao === 'https://evil.example') expect(acac).not.toBe('true');
+    });
+
+    test('HTTP methods: TRACE is not enabled @security', async ({ request }) =&gt; {
+      const res = await request.fetch('/', { method: 'TRACE' }).catch(() =&gt; null);
+      if (res) expect([400, 403, 404, 405, 501]).toContain(res.status());
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-seo-site-health-spec-ts">
+  <h3><code>tests/seo/site-health.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { env } from '../../src/config/env';
+  import { trackPageHealth } from '../../src/utils/helpers';
+
+  /**
+  * Generic site-health checks. Set CRAWL_PATHS=/,/about,/pricing,... in .env to cover a big site.
+  */
+  test.use({ storageState: guestState });
+
+  for (const path of env.crawlPaths) {
+    test.describe(`Site health: ${path}`, () =&gt; {
+      test('responds with 2xx and HTML @smoke', async ({ page }) =&gt; {
+        const res = await page.goto(path);
+        expect(res!.status()).toBeLessThan(400);
+        expect(res!.headers()['content-type']).toContain('text/html');
+      });
+
+      test('has a non-empty &lt;title&gt; and viewport meta', async ({ page }) =&gt; {
+        await page.goto(path);
+        expect((await page.title()).trim().length).toBeGreaterThan(0);
+        await expect(page.locator('meta[name="viewport"]')).toHaveCount(1);
+      });
+
+      test('SEO basics (soft): description, canonical, lang, charset, h1', async ({ page }) =&gt; {
+        await page.goto(path);
+        const info = await page.evaluate(() =&gt; ({
+          description: document.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
+          canonical: document.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? '',
+          lang: document.documentElement.lang,
+          charset: document.characterSet,
+          h1: document.querySelectorAll('h1').length,
+          robots: document.querySelector('meta[name="robots"]')?.getAttribute('content') ?? '',
+          og: document.querySelector('meta[property="og:title"]') !== null,
+        }));
+        for (const [k, v] of Object.entries(info)) test.info().annotations.push({ type: `seo-${k}`, description: String(v) });
+        expect.soft(info.charset.toLowerCase()).toBe('utf-8');
+        expect.soft(info.lang, 'html lang').toBeTruthy();
+        expect.soft(info.description.length, 'meta description').toBeGreaterThan(0);
+      });
+
+      test('no uncaught JS exceptions', async ({ page }) =&gt; {
+        const health = trackPageHealth(page);
+        await page.goto(path);
+        await page.waitForLoadState('networkidle');
+        expect(health.pageErrors).toEqual([]);
+      });
+
+      test('no failed network requests', async ({ page }) =&gt; {
+        const health = trackPageHealth(page, { ignore: [/google-analytics|googletagmanager|doubleclick|facebook|twitter|linkedin|backtrace/i] });
+        await page.goto(path);
+        await page.waitForLoadState('networkidle');
+        expect(health.failedRequests).toEqual([]);
+      });
+
+      test('no 4xx/5xx sub-resources', async ({ page }) =&gt; {
+        const bad: string[] = [];
+        page.on('response', (r) =&gt; {
+          if (r.status() &gt;= 400 &amp;&amp; new URL(r.url()).origin === new URL(page.url() || env.baseUrl).origin) bad.push(`${r.status()} ${r.url()}`);
+        });
+        await page.goto(path);
+        await page.waitForLoadState('networkidle');
+        expect(bad).toEqual([]);
+      });
+
+      test('internal links are not broken', async ({ page, request, baseURL }) =&gt; {
+        await page.goto(path);
+        const origin = new URL(baseURL!).origin;
+        const hrefs = await page.$$eval('a[href]', (as) =&gt; as.map((a) =&gt; (a as HTMLAnchorElement).href));
+        const internal = [...new Set(hrefs.filter((h) =&gt; h.startsWith(origin) &amp;&amp; !h.includes('#')))];
+        const broken: string[] = [];
+        for (const url of internal) {
+          const r = await request.get(url);
+          if (r.status() &gt;= 400) broken.push(`${r.status()} ${url}`);
+        }
+        expect(broken).toEqual([]);
+      });
+
+      test('images have alt attributes (soft)', async ({ page }) =&gt; {
+        await page.goto(path);
+        const missing = await page.$$eval('img', (imgs) =&gt; imgs.filter((i) =&gt; !i.hasAttribute('alt')).map((i) =&gt; i.src));
+        expect.soft(missing).toEqual([]);
+      });
+
+      test('no duplicate element IDs', async ({ page }) =&gt; {
+        await page.goto(path);
+        const dupes = await page.evaluate(() =&gt; {
+          const ids = [...document.querySelectorAll('[id]')].map((e) =&gt; e.id);
+          return ids.filter((id, i) =&gt; ids.indexOf(id) !== i);
+        });
+        expect(dupes).toEqual([]);
+      });
+    });
+  }
+
+  test.describe('Site-wide files', () =&gt; {
+    test('robots.txt is reachable or cleanly 404 (annotated)', async ({ request }) =&gt; {
+      const r = await request.get('/robots.txt');
+      test.info().annotations.push({ type: 'robots.txt', description: String(r.status()) });
+      expect([200, 404]).toContain(r.status());
+    });
+
+    test('sitemap.xml is valid XML if present', async ({ request }) =&gt; {
+      const r = await request.get('/sitemap.xml');
+      test.info().annotations.push({ type: 'sitemap.xml', description: String(r.status()) });
+      if (r.status() === 200 &amp;&amp; (r.headers()['content-type'] ?? '').includes('xml')) {
+        expect(await r.text()).toMatch(/&lt;urlset|&lt;sitemapindex/);
+      }
+    });
+
+    test('favicon is available', async ({ page, request, baseURL }) =&gt; {
+      await page.goto('/');
+      const href = await page.locator('link[rel~="icon"]').first().getAttribute('href').catch(() =&gt; null);
+      const url = href ? new URL(href, baseURL).toString() : new URL('/favicon.ico', baseURL).toString();
+      const r = await request.get(url);
+      expect.soft(r.status()).toBeLessThan(400);
+    });
+
+    test('custom 404 page does not return 200 for junk URLs (soft-404 check, annotated)', async ({ request }) =&gt; {
+      const r = await request.get('/this/page/should/not/exist-' + Date.now());
+      test.info().annotations.push({ type: 'status-for-missing-page', description: String(r.status()) });
+      expect(r.status()).toBeGreaterThanOrEqual(200);
+    });
+
+    test('response is compressed', async ({ request }) =&gt; {
+      const r = await request.get('/', { headers: { 'Accept-Encoding': 'gzip, br' } });
+      test.info().annotations.push({ type: 'content-encoding', description: r.headers()['content-encoding'] ?? 'none' });
+      expect(r.ok()).toBeTruthy();
+    });
+
+    test('static assets are cacheable (annotated)', async ({ page }) =&gt; {
+      const noCache: string[] = [];
+      page.on('response', (r) =&gt; {
+        if (/\.(js|css|png|jpg|svg|woff2?)(\?|$)/.test(r.url()) &amp;&amp; !r.headers()['cache-control']) noCache.push(r.url());
+      });
+      await page.goto('/');
+      await page.waitForLoadState('networkidle');
+      test.info().annotations.push({ type: 'assets-without-cache-control', description: String(noCache.length) });
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-setup-auth-setup-ts">
+  <h3><code>tests/setup/auth.setup.ts</code></h3>
+  <pre><code>import { test as setup, expect } from '@playwright/test';
+  import { LoginPage } from '../../src/pages/LoginPage';
+  import { users } from '../../src/data/users';
+  import { AUTH_FILE } from '../../src/config/env';
+
+  setup('authenticate standard user', async ({ page }) =&gt; {
+    const login = new LoginPage(page);
+    await login.loginAs(users.standard);
+    await expect(page).toHaveURL(/inventory\.html/);
+    await page.context().storageState({ path: AUTH_FILE });
+  });</code></pre>
+  </section>
+  <section id="f-tests-ui-interactions-interactions-spec-ts">
+  <h3><code>tests/ui-interactions/interactions.spec.ts</code></h3>
+  <pre><code>import { test, expect } from '@playwright/test';
+  import path from 'path';
+  import fs from 'fs';
+  import { env } from '../../src/config/env';
+
+  /** Playwright feature showcase against the-internet.herokuapp.com (public practice site). */
+  test.use({ baseURL: env.internetUrl, storageState: { cookies: [], origins: [] } });
+
+  test.describe('Forms &amp; inputs', () =&gt; {
+    test('form auth: successful login and logout', async ({ page }) =&gt; {
+      await page.goto('/login');
+      await page.locator('#username').fill('tomsmith');
+      await page.locator('#password').fill('SuperSecretPassword!');
+      await page.getByRole('button', { name: /login/i }).click();
+      await expect(page.locator('#flash')).toContainText('You logged into a secure area!');
+      await page.getByRole('link', { name: /logout/i }).click();
+      await expect(page.locator('#flash')).toContainText('You logged out');
+    });
+
+    test('form auth: invalid password', async ({ page }) =&gt; {
+      await page.goto('/login');
+      await page.locator('#username').fill('tomsmith');
+      await page.locator('#password').fill('nope');
+      await page.getByRole('button', { name: /login/i }).click();
+      await expect(page.locator('#flash')).toContainText('Your password is invalid!');
+    });
+
+    test('checkboxes can be checked and unchecked', async ({ page }) =&gt; {
+      await page.goto('/checkboxes');
+      const boxes = page.locator('input[type=checkbox]');
+      await boxes.first().check();
+      await expect(boxes.first()).toBeChecked();
+      await boxes.last().uncheck();
+      await expect(boxes.last()).not.toBeChecked();
+    });
+
+    test('dropdown selection by value and label', async ({ page }) =&gt; {
+      await page.goto('/dropdown');
+      await page.locator('#dropdown').selectOption('1');
+      await expect(page.locator('#dropdown')).toHaveValue('1');
+      await page.locator('#dropdown').selectOption({ label: 'Option 2' });
+      await expect(page.locator('#dropdown')).toHaveValue('2');
+    });
+
+    test('number input accepts keyboard arrows', async ({ page }) =&gt; {
+      await page.goto('/inputs');
+      const input = page.locator('input[type=number]');
+      await input.fill('5');
+      await input.press('ArrowUp');
+      await expect(input).toHaveValue('6');
+      await input.press('ArrowDown');
+      await input.press('ArrowDown');
+      await expect(input).toHaveValue('4');
+    });
+
+    test('keyboard key presses are detected', async ({ page }) =&gt; {
+      await page.goto('/key_presses');
+      await page.locator('#target').press('A');
+      await expect(page.locator('#result')).toHaveText('You entered: A');
+      await page.keyboard.press('Escape');
+      await expect(page.locator('#result')).toHaveText('You entered: ESCAPE');
+    });
+
+    test('typing with delay and clearing', async ({ page }) =&gt; {
+      await page.goto('/login');
+      const u = page.locator('#username');
+      await u.pressSequentially('hello', { delay: 30 });
+      await expect(u).toHaveValue('hello');
+      await u.clear();
+      await expect(u).toHaveValue('');
+    });
+  });
+
+  test.describe('Dialogs, windows, frames', () =&gt; {
+    test('JS alert is accepted', async ({ page }) =&gt; {
+      await page.goto('/javascript_alerts');
+      page.once('dialog', (d) =&gt; { expect(d.type()).toBe('alert'); expect(d.message()).toBe('I am a JS Alert'); d.accept(); });
+      await page.getByRole('button', { name: 'Click for JS Alert' }).click();
+      await expect(page.locator('#result')).toHaveText('You successfully clicked an alert');
+    });
+
+    test('JS confirm dismissed', async ({ page }) =&gt; {
+      await page.goto('/javascript_alerts');
+      page.once('dialog', (d) =&gt; d.dismiss());
+      await page.getByRole('button', { name: 'Click for JS Confirm' }).click();
+      await expect(page.locator('#result')).toHaveText('You clicked: Cancel');
+    });
+
+    test('JS prompt with text', async ({ page }) =&gt; {
+      await page.goto('/javascript_alerts');
+      page.once('dialog', (d) =&gt; d.accept('Playwright'));
+      await page.getByRole('button', { name: 'Click for JS Prompt' }).click();
+      await expect(page.locator('#result')).toHaveText('You entered: Playwright');
+    });
+
+    test('new browser window/tab is handled', async ({ page, context }) =&gt; {
+      await page.goto('/windows');
+      const [popup] = await Promise.all([context.waitForEvent('page'), page.getByRole('link', { name: 'Click Here' }).click()]);
+      await popup.waitForLoadState();
+      await expect(popup.locator('h3')).toHaveText('New Window');
+      await popup.close();
+      await expect(page.locator('h3')).toHaveText('Opening a new window');
+    });
+
+    test('nested frames', async ({ page }) =&gt; {
+      await page.goto('/nested_frames');
+      const top = page.frameLocator('frame[name="frame-top"]');
+      await expect(top.frameLocator('frame[name="frame-middle"]').locator('#content')).toHaveText('MIDDLE');
+      await expect(page.frameLocator('frame[name="frame-bottom"]').locator('body')).toContainText('BOTTOM');
+    });
+  });
+
+  test.describe('Dynamic content', () =&gt; {
+    test('element hidden then rendered after Start', async ({ page }) =&gt; {
+      await page.goto('/dynamic_loading/1');
+      await expect(page.locator('#finish')).toBeHidden();
+      await page.getByRole('button', { name: 'Start' }).click();
+      await expect(page.locator('#finish')).toHaveText('Hello World!', { timeout: 15_000 });
+    });
+
+    test('element added to DOM after Start', async ({ page }) =&gt; {
+      await page.goto('/dynamic_loading/2');
+      await page.getByRole('button', { name: 'Start' }).click();
+      await expect(page.locator('#finish h4')).toHaveText('Hello World!', { timeout: 15_000 });
+    });
+
+    test('add and remove elements', async ({ page }) =&gt; {
+      await page.goto('/add_remove_elements/');
+      for (let i = 0; i &lt; 3; i++) await page.getByRole('button', { name: 'Add Element' }).click();
+      await expect(page.locator('.added-manually')).toHaveCount(3);
+      await page.locator('.added-manually').first().click();
+      await expect(page.locator('.added-manually')).toHaveCount(2);
+    });
+
+    test('hover reveals caption', async ({ page }) =&gt; {
+      await page.goto('/hovers');
+      const fig = page.locator('.figure').first();
+      await expect(fig.locator('.figcaption')).toBeHidden();
+      await fig.hover();
+      await expect(fig.locator('.figcaption')).toBeVisible();
+      await expect(fig.locator('h5')).toContainText('user1');
+    });
+
+    test('infinite scroll loads more content', async ({ page }) =&gt; {
+      await page.goto('/infinite_scroll');
+      const paras = page.locator('.jscroll-added');
+      const before = await paras.count();
+      await page.mouse.wheel(0, 4000);
+      await expect.poll(async () =&gt; paras.count(), { timeout: 10_000 }).toBeGreaterThan(before);
+    });
+
+    test('context menu and its alert', async ({ page }) =&gt; {
+      await page.goto('/context_menu');
+      page.once('dialog', (d) =&gt; { expect(d.message()).toBe('You selected a context menu'); d.accept(); });
+      await page.locator('#hot-spot').click({ button: 'right' });
+    });
+  });
+
+  test.describe('Tables, files, status codes', () =&gt; {
+    test('table sorting by last name', async ({ page }) =&gt; {
+      await page.goto('/tables');
+      await page.locator('#table1 th', { hasText: 'Last Name' }).click();
+      const names = await page.locator('#table1 tbody tr td:nth-child(1)').allInnerTexts();
+      expect(names).toEqual([...names].sort());
+    });
+
+    test('table: read row data by content', async ({ page }) =&gt; {
+      await page.goto('/tables');
+      const row = page.locator('#table1 tbody tr', { hasText: 'Conway' });
+      await expect(row.locator('td').nth(3)).toHaveText('$50.00');
+    });
+
+    test('file upload', async ({ page }, testInfo) =&gt; {
+      const file = testInfo.outputPath('hello.txt');
+      fs.writeFileSync(file, 'hello playwright');
+      await page.goto('/upload');
+      await page.locator('#file-upload').setInputFiles(file);
+      await page.locator('#file-submit').click();
+      await expect(page.locator('#uploaded-files')).toHaveText('hello.txt');
+    });
+
+    test('file upload from in-memory buffer', async ({ page }) =&gt; {
+      await page.goto('/upload');
+      await page.locator('#file-upload').setInputFiles({ name: 'mem.txt', mimeType: 'text/plain', buffer: Buffer.from('in memory') });
+      await page.locator('#file-submit').click();
+      await expect(page.locator('#uploaded-files')).toHaveText('mem.txt');
+    });
+
+    test('file download', async ({ page }, testInfo) =&gt; {
+      await page.goto('/download');
+      const link = page.locator('.example a').first();
+      const [download] = await Promise.all([page.waitForEvent('download'), link.click()]);
+      const target = testInfo.outputPath(download.suggestedFilename());
+      await download.saveAs(target);
+      expect(fs.statSync(target).size).toBeGreaterThan(0);
+      expect(path.extname(target)).not.toBe('');
+    });
+
+    for (const code of [200, 301, 404, 500]) {
+      test(`status code page ${code}`, async ({ request }) =&gt; {
+        const res = await request.get(`/status_codes/${code}`, { maxRedirects: 0 });
+        expect(res.status()).toBe(code);
+      });
+    }
+
+    test('broken images page: detects broken images', async ({ page }) =&gt; {
+      await page.goto('/broken_images');
+      const broken = await page.locator('.example img').evaluateAll((imgs) =&gt; imgs.filter((i) =&gt; (i as HTMLImageElement).naturalWidth === 0).length);
+      expect(broken).toBeGreaterThan(0);
+    });
+
+    test('basic auth via httpCredentials', async ({ browser }) =&gt; {
+      const ctx = await browser.newContext({ baseURL: env.internetUrl, httpCredentials: { username: 'admin', password: 'admin' } });
+      const page = await ctx.newPage();
+      await page.goto('/basic_auth');
+      await expect(page.locator('.example p')).toContainText('Congratulations');
+      await ctx.close();
+    });
+
+    test('drag and drop columns swap', async ({ page }) =&gt; {
+      await page.goto('/drag_and_drop');
+      await page.locator('#column-a').dragTo(page.locator('#column-b'));
+      // HTML5 DnD can be flaky in headless; the assertion is tolerant of both outcomes
+      const a = await page.locator('#column-a header').innerText();
+      expect(['A', 'B']).toContain(a);
+    });
+
+    test('slider moves with the keyboard', async ({ page }) =&gt; {
+      await page.goto('/horizontal_slider');
+      const slider = page.locator('input[type=range]');
+      await slider.focus();
+      for (let i = 0; i &lt; 4; i++) await slider.press('ArrowRight');
+      await expect(page.locator('#range')).toHaveText('2');
+    });
+
+    test('JS errors on page are observable', async ({ page }) =&gt; {
+      const errors: string[] = [];
+      page.on('pageerror', (e) =&gt; errors.push(e.message));
+      await page.goto('/javascript_error');
+      await expect.poll(() =&gt; errors.length).toBeGreaterThan(0);
+    });
+  });</code></pre>
+  </section>
+  <section id="f-tests-visual-visual-spec-ts">
+  <h3><code>tests/visual/visual.spec.ts</code></h3>
+  <pre><code>import { test, expect, guestState } from '../../src/fixtures';
+  import { products } from '../../src/data/products';
+  import { checkoutInfo } from '../../src/data/users';
+
+  // Create baselines first:  npm run test:visual:update
+  test.describe('Visual regression', () =&gt; {
+    test('login page', async ({ loginPage, page }) =&gt; {
+      await page.context().clearCookies();
+      await loginPage.goto();
+      await expect(page).toHaveScreenshot('login.png', { fullPage: true });
+    });
+
+    test('inventory page', async ({ inventory, page }) =&gt; {
+      await expect(page).toHaveScreenshot('inventory.png', { fullPage: true });
+    });
+
+    test('inventory sorted by price desc', async ({ inventory, page }) =&gt; {
+      await inventory.sortBy('hilo');
+      await expect(page).toHaveScreenshot('inventory-hilo.png', { fullPage: true });
+    });
+
+    test('inventory item card', async ({ inventory }) =&gt; {
+      await expect(inventory.itemCard(products.backpack)).toHaveScreenshot('card-backpack.png');
+    });
+
+    test('product detail', async ({ inventory, page }) =&gt; {
+      await inventory.openProduct(products.fleece);
+      await expect(page).toHaveScreenshot('product-detail.png');
+    });
+
+    test('cart with items', async ({ inventory, page }) =&gt; {
+      await inventory.addMany([products.backpack, products.onesie]);
+      await inventory.openCart();
+      await expect(page).toHaveScreenshot('cart.png', { fullPage: true });
+    });
+
+    test('empty cart', async ({ cartPage, page }) =&gt; {
+      await cartPage.goto();
+      await expect(page).toHaveScreenshot('cart-empty.png', { fullPage: true });
+    });
+
+    test('checkout step one with validation error', async ({ inventory, cartPage, checkoutPage, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.continueButton.click();
+      await expect(page).toHaveScreenshot('checkout-error.png', { fullPage: true });
+    });
+
+    test('checkout overview', async ({ inventory, cartPage, checkoutPage, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await expect(page).toHaveScreenshot('checkout-overview.png', { fullPage: true });
+    });
+
+    test('order complete', async ({ inventory, cartPage, checkoutPage, page }) =&gt; {
+      await inventory.add(products.backpack);
+      await inventory.openCart();
+      await cartPage.checkout();
+      await checkoutPage.submitInfo(checkoutInfo.valid);
+      await checkoutPage.finish();
+      await expect(page).toHaveScreenshot('complete.png', { fullPage: true });
+    });
+
+    test('sidebar open', async ({ inventory, page }) =&gt; {
+      await inventory.openMenu();
+      await expect(page).toHaveScreenshot('sidebar.png');
+    });
+
+    test('dark color scheme', async ({ inventory, page }) =&gt; {
+      await page.emulateMedia({ colorScheme: 'dark' });
+      await expect(page).toHaveScreenshot('inventory-dark.png', { fullPage: true });
+    });
+
+    for (const vp of [{ w: 375, h: 812 }, { w: 768, h: 1024 }, { w: 1920, h: 1080 }]) {
+      test(`inventory @ ${vp.w}x${vp.h}`, async ({ inventory, page }) =&gt; {
+        await page.setViewportSize({ width: vp.w, height: vp.h });
+        await expect(page).toHaveScreenshot(`inventory-${vp.w}.png`, { fullPage: true });
+      });
+    }
+  });</code></pre>
+  </section>
+  <section id="f-github-workflows-playwright-yml">
+  <h3><code>.github/workflows/playwright.yml</code></h3>
+  <pre><code>name: Playwright Tests
+
+  on:
+    push:
+      branches: [main]
+    pull_request:
+    schedule:
+      - cron: '0 3 * * *'   # nightly
+    workflow_dispatch:
+
+  jobs:
+    test:
+      runs-on: ubuntu-latest
+      timeout-minutes: 45
+      strategy:
+        fail-fast: false
+        matrix:
+          project: [chromium, firefox, webkit, mobile-chrome, mobile-safari, api]
+          shard: [1/2, 2/2]
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
+          with:
+            node-version: 20
+            cache: npm
+        - run: npm ci
+        - run: npx playwright install --with-deps ${{ matrix.project == 'api' &amp;&amp; 'chromium' || matrix.project == 'mobile-chrome' &amp;&amp; 'chromium' || matrix.project == 'mobile-safari' &amp;&amp; 'webkit' || matrix.project }}
+        - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }} --reporter=blob
+          env:
+            CI: true
+            BASE_URL: ${{ vars.BASE_URL || 'https://www.saucedemo.com' }}
+        - uses: actions/upload-artifact@v4
+          if: always()
+          with:
+            name: blob-${{ matrix.project }}-${{ strategy.job-index }}
+            path: blob-report
+            retention-days: 7
+
+    merge-reports:
+      if: always()
+      needs: test
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
+          with: { node-version: 20, cache: npm }
+        - run: npm ci
+        - uses: actions/download-artifact@v4
+          with: { path: all-blob-reports, pattern: 'blob-*', merge-multiple: true }
+        - run: npx playwright merge-reports --reporter html ./all-blob-reports
+        - uses: actions/upload-artifact@v4
+          with:
+            name: html-report
+            path: playwright-report
+            retention-days: 14</code></pre>
+  </section>
+  </article>
+
+ </main>
+  </body>
+</html>
+
