@@ -12,6 +12,17 @@
   font-stretch: 75% 125%;
   font-display: swap;
 }
+@media (max-width: 600px) {
+  body { padding: 16px 12px 48px; font-size: 16px; }
+  h1 { font-size: 1.7rem; }
+  pre {
+    padding: 12px;
+    font-size: 0.8rem;
+    white-space: pre-wrap;      /* wrap long lines instead of scrolling */
+    overflow-wrap: anywhere;
+  }
+  .chapters a { flex-direction: column; gap: 2px; }
+}
 
 :root {
   --bg: #f6f7f8;

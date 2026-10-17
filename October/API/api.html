@@ -1,29 +1,25 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>APIs Login Bypass</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>APIs Login Bypass</title>
-  <link rel="stylesheet" href="../../style.css" />
-</head>
+  <body>
+    <main>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../october.html">October</a></li>
+          <li aria-current="page">APIs Login Bypass</li>
+        </ol>
+      </nav>
 
-<body>
-  <main>
-    <nav class="crumbs" aria-label="Breadcrumb">
-      <ol>
-        <li><a href="../../index.html">Home</a></li>
-        <li><a href="../october.html">October</a></li>
-        <li aria-current="page">APIs Login Bypass</li>
-      </ol>
-    </nav>
-
-    <h1>Chapter 1: APIs Login Bypass</h1>
-    <p class="sub">Playwright: login via API and open dashboard</p>
-
-    <pre><code>
-
-    import { test, expect, request, APIRequestContext } from "@playwright/test";
+      <h1>Chapter 1: APIs Login Bypass</h1>
+      <p class="sub">Playwright: login via API and open dashboard</p>
+      <pre><code>import { test, expect, request, APIRequestContext } from "@playwright/test";
 
 type LoginPayload = {
   email: string;
@@ -42,7 +38,7 @@ const payload: LoginPayload = {
 let token: string;
 let apiContext: APIRequestContext;
 
-test.beforeAll(async () => {
+test.beforeAll(async () =&gt; {
   apiContext = await request.newContext();
   const response = await apiContext.post(
     "https://bondaracademy.com/api/auth/sign-in/email",
@@ -53,15 +49,12 @@ test.beforeAll(async () => {
   token = responseJson.token;
 });
 
-test("login Bondar and click", async ({ page }) => {
-   await page.addInitScript(value =>{
-        window.localStorage.setItem("token", value)
-    },token)
-    await page.goto('https://bondaracademy.com/dashboard')
-});
-
-  </code></pre>
-  </main>
-</body>
-
+test("login Bondar and click", async ({ page }) =&gt; {
+  await page.addInitScript((value) =&gt; {
+    window.localStorage.setItem("token", value);
+  }, token);
+  await page.goto("https://bondaracademy.com/dashboard");
+});</code></pre>
+    </main>
+  </body>
 </html>
