@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>APIs Login Bypass</title>
+    <link rel="stylesheet" href="../../style.css" />
+</head>
+
+<body>
+    <main>
+        <pre>
+            <code>
+                import {Page, Locator, expect} from "@playwright/test"
+
+                        export class LoginPage{
+                            readonly page: Page;
+                            readonly usernameInput: Locator;
+                            readonly passwordInput: Locator
+                            readonly loginButton: Locator;
+                            readonly errorAlert: Locator;
+                            readonly requiredMessages: Locator;
+
+                            constructor (page: Page){
+                                this.page = page
+                                this.usernameInput = page.getByPlaceholder("Username");
+                                this.passwordInput = page.getByPlaceholder("Password")
+                                this.loginButton = page.getByRole('button', {name: "Login"})
+                                this.errorAlert = page.getByRole("alert")
+                                this.requiredMessages = page.locator('')
+                            }
+
+                            async goto(){
+                                await this.page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login')
+                                await expect(this.loginButton).toBeVisible()
+                            }
+
+                            async login(username: string, password: string){
+                                await this.usernameInput.fill(username)
+                                await this.passwordInput.fill(password)
+                                await this.loginButton.click()
+                            }
+
+                            async loginAndWaitForDashboard(username: string, password: string){
+                                await this.login(username, password)
+                                await this.page.waitForURL('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login/dashboard/index')
+                            }
+                            async expectInvalidCredentials(){
+                                await expect(this.errorAlert).toContainText('Invalid credentials')
+                            }
+                            async expectRequiredErrors(count = 2){
+                                await expect(this.requiredMessages).toHaveCount(count)
+                            }
+                        }
+
+
+
+            </code>
+        </pre>
+    </main>
+</body>
+
+</html>
